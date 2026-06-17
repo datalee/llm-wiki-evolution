@@ -1,0 +1,4 @@
+interface:
+  display_name: "LLM Wiki Evolution"
+  short_description: "Govern and evolve LLM wikis with quality gates."
+  default_prompt: "Use this skill to audit an LLM wiki, resolve structural issues, and produce a concrete evolution plan."
