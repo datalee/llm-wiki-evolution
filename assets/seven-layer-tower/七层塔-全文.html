@@ -1,0 +1,2852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>《七层塔》</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2cm 2.5cm 2cm;
+    @top-center { content: counter(page); font-family: 'Microsoft YaHei'; font-size: 9pt; color: #999; }
+  }
+  body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    font-size: 11pt;
+    line-height: 1.7;
+    color: #222;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1em;
+  }
+  h1 {
+    font-size: 24pt;
+    font-weight: bold;
+    text-align: center;
+    margin: 1.5em 0 0.8em 0;
+    padding-bottom: 0.4em;
+    border-bottom: 2px solid #333;
+    page-break-before: always;
+  }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 {
+    font-size: 18pt;
+    font-weight: bold;
+    margin: 1.4em 0 0.6em 0;
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #aaa;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 1.2em 0 0.4em 0;
+    color: #333;
+    page-break-after: avoid;
+  }
+  h4 { font-size: 12pt; font-weight: bold; margin: 1em 0 0.3em 0; }
+  p { margin: 0.6em 0; text-align: justify; }
+  blockquote {
+    border-left: 4px solid #888;
+    padding: 0.4em 0.8em;
+    color: #555;
+    background: #f5f5f5;
+    margin: 0.8em 0;
+  }
+  code {
+    font-family: 'Consolas', 'Cascadia Code', 'Courier New', monospace;
+    background: #f0f0f0;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 0.92em;
+  }
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.88em;
+    line-height: 1.45;
+    page-break-inside: avoid;
+  }
+  pre code {
+    background: transparent;
+    color: inherit;
+    padding: 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: left;
+  }
+  th { background: #f0f0f0; font-weight: bold; }
+  hr {
+    border: none;
+    border-top: 1px dashed #888;
+    margin: 2em 0;
+  }
+  ul, ol { margin: 0.5em 0; padding-left: 1.8em; }
+  li { margin: 0.2em 0; }
+  a { color: #1a5490; text-decoration: none; }
+  img { max-width: 100%; }
+  /* 中文优化 */
+  body { word-wrap: break-word; }
+  /* cover page */
+  .cover { text-align: center; margin-top: 30%; }
+  .cover h1 { font-size: 36pt; border: none; page-break-before: avoid; }
+  .cover .subtitle { font-size: 14pt; color: #666; margin-top: 1em; }
+</style>
+</head>
+<body>
+<h1 id="_1">《七层塔》</h1>
+<blockquote>
+<p>一部关于 AI Agent Harness 进化的非虚构小说<br />
+写给想看清 "prompt 工程师" 下一步是什么的人</p>
+</blockquote>
+<hr />
+<h1 id="_2">前言 · 这本书是怎么写出来的</h1>
+<p>2027 年 4 月的一个晚上，我合上备忘录，把刚写完的《七层塔》第七章拷到飞书，发给了一个朋友。</p>
+<p>朋友读完后回了三个字："是 AI 写的吧？"</p>
+<p>我想了想，回答："是我写的，AI 帮我盖的。"</p>
+<p>这句话就是这本书前言的全部。</p>
+<hr />
+<h2 id="_3">一、本书的来历</h2>
+<p>这本书的起点是 2026 年 9 月 3 日早上，一个想法：</p>
+<blockquote>
+<p><em>"我们本地存了这么多 llm-wiki 的知识，能否综合后写一本给我看的科普小说，可以把知识串起来？"</em></p>
+</blockquote>
+<p>我手头有一份"Karpathy-style 知识库"——1,033 个知识节点（209 个概念 + 166 个实体 + 658 个信源），全部维护在 <code>C:\Users\Administrator\clawd\memory\wiki\</code> 下，干净、规整、有索引。</p>
+<p>这个 wiki 的主轴是 <strong>AI Agent Harness 工程</strong>——从 prompt、tools、memory、skills、subagents、evaluation、self-improvement，七层架构，过去三年的真实项目。</p>
+<p>把这些散点串成"故事"，是我一直想做但没做的事。</p>
+<p>写小说看起来是创意活，本质是<strong>结构化知识重构</strong>——把零散的事实压进一条叙事线索，让读者在故事里"看见"知识之间的关联。这正是 AI 擅长的活。</p>
+<p>所以我开始干。</p>
+<hr />
+<h2 id="_4">二、本书的写作流程</h2>
+<p>我<strong>没有</strong>用一个大模型写 5 万字。</p>
+<p>我用的是<strong>"读者-作者"循环</strong>：</p>
+<pre><code>1. 我读 wiki 主轴，搭出 7 层 Harness 框架
+2. 我给读者 4 个故事结构选项（七层塔 / 编年史 / 双线 / 聚焦 Memory）
+3. 读者选 &quot;七层塔&quot;
+4. 我写序章 + 第一章（约 6,000 字），用 media tag 交付
+5. 读者给 3 个维度的反馈（节奏 / 范围 / 事实准度）
+6. 我按反馈连写第二章到第四章
+7. 循环直到全书写完
+</code></pre>
+<p><strong>每一章都先给读者看，再写下一章</strong>。读者不是被动接受者，是"实时编辑"。</p>
+<p>这种工作流对 AI 写作是必要的——AI 一次写 5 万字，几乎一定会有"偏题 / 重复 / 走神"的问题。<strong>分章 + 即时反馈</strong>是质量的护城河。</p>
+<hr />
+<h2 id="_5">三、本书的"事实优先"原则</h2>
+<p>读者在第一轮反馈里选了"事实优先"。</p>
+<p>这意味着：<br />
+- 每个项目 / 论文 / 文档都要有真实出处<br />
+- 价格、时间、GitHub Star 数都查了真实数据<br />
+- 不确定的事件，宁可不写</p>
+<p>每章末尾有一个"引用"段，列出本章涉及的真实 wiki 节点。这部分不是装饰——是<strong>"如果你对某个项目感兴趣，从这里开始"</strong>的入口。</p>
+<p><strong>小说里的"事实"和 wiki 里的"事实"严格对齐</strong>。这是这本书跟"AI 写的其他小说"最大的不同——它<strong>可以被当作一份带叙事的工程参考</strong>。</p>
+<hr />
+<h2 id="_6">四、本书的局限</h2>
+<p>这本书<strong>不</strong>适合以下场景：</p>
+<ul>
+<li><strong>零基础读者</strong>——它假设你懂"什么是 LLM"、"什么是 API"</li>
+<li><strong>只看故事的读者</strong>——它有 60+ 个技术引用，密度比一般小说高</li>
+<li><strong>想读"未来"的人</strong>——它写的是 2024-2027 的事，不是 2030+ 的预言</li>
+</ul>
+<p>这本书<strong>适合</strong>以下场景：</p>
+<ul>
+<li>工程师 / 产品经理 / 研究员 / 投资人 / 学生</li>
+<li>想知道"AI agent 工程的完整链路"的人</li>
+<li>想知道"这 3 年 AI 行业怎么从 5 行 prompt 走到 self-improvement"的人</li>
+<li>想"重新发现自己手上在做的事的坐标"的人</li>
+</ul>
+<p><strong>如果你符合最后一条，这本书就是写给你的。</strong></p>
+<hr />
+<h2 id="_7">五、致谢</h2>
+<p>这本书的真正作者不止我。</p>
+<p><strong>给读者</strong>：谢谢你选"七层塔"，选"事实优先"，选"写 L5+L6 两章"。每一次选择都让这本书更接近你想要的形状。</p>
+<p><strong>给知识库</strong>：clawd/memory/wiki 是过去 3 年积累的 803 页 / 2,138 个 wiki 链接的"行业地图"。没有这张地图，这本书写不出来。</p>
+<p><strong>给每一个被引用的项目</strong>：Anthropic / OpenAI / DeepSeek / Sakana AI / Stanford / 腾讯程序员 / Mem0 / Multica / HiClaw / Ruflo / 深即达 / Skillify / ai-memory / teamai-cli / Lilian Weng / 孙敦灿 / 公众号「关注前沿的」/ 公众号「开源星探」……</p>
+<p><strong>是你们造了 L1-L7。</strong></p>
+<p><strong>是你们让这本书有了锚点。</strong></p>
+<hr />
+<p>— 2027 年 4 月，深圳</p>
+<hr />
+<h1 id="_8">《七层塔》</h1>
+<blockquote>
+<p>一部关于 AI Agent Harness 进化的非虚构小说</p>
+<p>——写给想看清"prompt 工程师"下一步是什么的人</p>
+</blockquote>
+<hr />
+<h2 id="2024-3">序章 · 华强北，2024 年 3 月</h2>
+<p>深圳华强北，科兴科学园 B 座 11 楼。</p>
+<p>李明盯着屏幕右下角的 <code>404 Not Found</code>，又过去 12 分钟了。他三个月前在这家 SaaS 公司做后端，3 月 1 号被 HR 一通电话"优化"——N+1 的工资当天下午就到账，比他写的最后一个 bugfix 还快。剩下 23 个工作日的年假，公司说"不用休，给您折现"。他算了算，按基本工资折，到手不到 4 万，于是选了休。</p>
+<p>休假的第一个礼拜他没出门，把阳台上的多肉浇了三次水，第二次浇完才意识到上一次才过了两天。第三次浇完，他决定出门。</p>
+<p>"科兴"方圆 500 米内最像样的去处是负一层的瑞幸。他本来只想买杯美式，结果撞上了一场"AI 编程线下分享会"——免费、扫码入场、还送杯卡。主持人是个二十出头的男孩，工牌上写着"Trae · 字节跳动"。</p>
+<p>台上那个人讲了 40 分钟，PPT 上 90% 的内容李明都听懂了：他之前做后端用 Java + Spring Boot，GPT-4 的 API 文档比 Spring 的简单十倍，剩下的就是改改 prompt。但剩下 10% 他没听懂——</p>
+<p>"当你把 prompt 当作软件工程来对待，<strong>它就是</strong>软件工程。"</p>
+<p>散场后李明加了分享者的微信，对方回得很快："哥，你可以先去玩玩 Anthropic 那个 Console，免费的，能看 token 怎么算。"他还补了一句："你是程序员吧？那你看 Prompt Caching 那段就行，2024 年 3 月刚发的，<strong>省 90% 成本</strong>那个。"</p>
+<p>回出租屋的地铁上，李明刷到了那条推文。Anthropic 写道：<em>Prompt Caching reduces latency by &gt;2x and cost by up to 90%.</em> 他把"90%"看了三遍，想起自己最后一次 deploy 的 SpringBoot 服务，把 5 个小时的 Java 启动时间优化到 40 秒。优化 90% 用了一个月。</p>
+<p>到站的时候他在手机上下载了 Claude 的 app。他想：<strong>我能不能做点什么？</strong></p>
+<hr />
+<p>那天晚上，他写下了自己第一行 prompt。</p>
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+msg = client.messages.create(
+    model=&quot;claude-3-haiku-20240307&quot;,
+    max_tokens=1024,
+    system=&quot;你是一个专业的邮件助手。&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;帮我把这段话改成正式一点的商务语气：hi 那个 demo 我下周三才能上 抱歉哈&quot;}
+    ]
+)
+print(msg.content[0].text)
+</code></pre>
+<p>跑通了。输出："您好，由于本周日程较为紧张，该 demo 将延期至下周三上线，对此带来的不便深表歉意。"</p>
+<p>李明盯着那行字看了十几秒。他以前做后端，要写一个能改写语气的小工具，至少要：(1) 找 NLU 服务或自己训模型，(2) 写个 Flask API 包一层，(3) 部署到一台 1 核 2G 的云服务器，(4) 监控日志、排 nginx、配 HTTPS。全套下来三天起步。</p>
+<p>现在：5 行代码，4 秒钟。</p>
+<p>他忽然明白台上那个人说的是什么意思——<strong>这 5 行不是 demo，是地基</strong>。</p>
+<p>那天他在备忘录里写下：</p>
+<blockquote>
+<p>2024-03-23<br />
+想做一个"AI 写周报"的 SaaS。<br />
+ 思路：用户填本周做了什么 → GPT 改写成周报 → 可选调语气。<br />
+ 风险：同质化严重，怎么差异化？<br />
+ 灵感：先做 100 个 prompt，让用户选。</p>
+</blockquote>
+<p>他看着"100 个 prompt"四个字，没有删。</p>
+<hr />
+<h2 id="l1-prompt">第一章 · L1 Prompt — "你只要会说话"</h2>
+<hr />
+<h3 id="11-prompt-saas">1.1 三个 prompt 决定一个 SaaS</h3>
+<p>四月中旬，李明的"AI 周报助手"上线了。</p>
+<p>版本号 0.1，没写登录系统，没用数据库，prompt 写在 Python 文件的字符串里。唯一的差异化是<strong>风格选择器</strong>——他用 Three.js 做了三个按钮，"老板向 / 平级向 / 客户向"，每个按钮下面是一个手写的 prompt。</p>
+<p>他后来回想，这是他人生中第一次体会到<strong>prompt 工程的全部诅咒和祝福</strong>——</p>
+<p>老板向 prompt 长这样：</p>
+<pre><code>你是一位十年经验的产品经理，正在向上级领导做周报汇报。
+请用以下结构改写用户的输入：
+1. 本周核心成果（不超过 3 条）
+2. 关键数据 / 进度
+3. 风险与需要支持
+4. 下周计划
+
+风格要求：
+- 主动语态，少用被动
+- 数字必须保留
+- 不要使用&quot;我们认为&quot;、&quot;我个人觉得&quot;等弱化主语的表达
+- 结尾加一句&quot;如需进一步说明，请随时联系我&quot;
+
+输入：
+{user_input}
+</code></pre>
+<p>平级向 prompt 大同小异，但把"上级"换成"同组同事"，把"主动汇报"换成"信息同步"。客户向最简单——把"我们"全换成对方公司名，加一句"欢迎随时沟通"。</p>
+<p>跑了一周，李明用 Cursor 写的运营脚本统计发现：<strong>老板向的留存是平级向的 3 倍</strong>。他一开始以为是因为老板向付费意愿强，后来才明白真相：老板向的 prompt 是他<strong>写了 11 版才稳定</strong>的，平级向只写了 2 版。</p>
+<p>那 11 版里他学会了几个名字——</p>
+<ul>
+<li><strong>温度 (temperature)</strong>：从 1.0 调到 0.3，输出不再飘</li>
+<li><strong>系统提示 (system prompt)</strong>：把"角色 + 风格 + 输出结构"分开，比塞在一个 user message 里稳定 10 倍</li>
+<li><strong>少样本 (few-shot)</strong>：他加了 3 个例子之后，输出格式再没跑偏过</li>
+<li><strong>XML / JSON 输出</strong>：他试过用 "请用 JSON 输出"，失败率 40%；改成 "请将改写后的内容放在 <code>json</code> 代码块里"，失败率 5%</li>
+</ul>
+<p>这四个词，<strong>Lilian Weng 在 2023 年 3 月那篇《Prompt Engineering》长文里都讲过</strong>。李明没读过那篇文章——他是自己撞墙撞出来的。</p>
+<p>但他撞出来的成本是 <strong>2 周</strong>。Lilian Weng 用 1 万字告诉读者同样的事。</p>
+<hr />
+<h3 id="12-2024">1.2 提示工程是 2024 年最小的工程</h3>
+<p>2024 年 5 月，李明的周报助手日活爬到了 800。同期 Anthropic 在 5 月 9 日发布《Prompt Engineering Overview》——一份 30 页的官方指南，主题就是李明这 2 周干的事。</p>
+<blockquote>
+<p><em>The Anthropic Console now offers a Prompt Generator tool that writes prompts for you based on a few examples and a desired output... The tool runs against Claude 3 Haiku, the fastest and most affordable model in the Claude 3 family.</em></p>
+</blockquote>
+<p>李明读完那份指南，笑了。</p>
+<p>他笑的不是内容——内容他已经全都会了。他笑的是<strong>Anthropic 把"会写 prompt"做成了产品功能</strong>。意思是：他 2 周学的东西，Anthropic 认为它应该被工具化。</p>
+<p>后来这件事反复发生。OpenAI 在 2024 年 8 月推出 Structured Outputs，把 JSON 输出的失败率从 5% 砸到 &lt; 1%；Google 在 2024 年 9 月推出 Gemini 的 System Instructions，把 system prompt 的地位制度化；Anthropic 在 2024 年 8 月推出 <strong>Prompt Caching</strong>——</p>
+<p>Prompt Caching 是真正改变游戏规则的那个。</p>
+<blockquote>
+<p><em>Enables developers to cache frequently used context between API calls... reduce costs by up to 90% and latency by up to 85% for long prompts.</em></p>
+</blockquote>
+<p>李明当时的 SaaS 一次调用要 6 美分（处理一段 2000 token 的周报），加上 gpt-4o 的输入成本，月毛利只剩 8%。Prompt Caching 之后，他把"角色定义 + 风格指南 + 3 个 few-shot 例子"这部分<strong>完全缓存</strong>，每次调用只重新算用户输入——月成本砍了 70%。</p>
+<p><strong>他用 3 行代码就接入了这个优化。</strong></p>
+<pre><code class="language-python"># Before: 6 cents per call
+client.messages.create(model=&quot;claude-3-5-sonnet&quot;, max_tokens=1024, system=SYSTEM, messages=[...])
+
+# After: 0.4 cents per call (with cache hits)
+client.messages.create(
+    model=&quot;claude-3-5-sonnet-20240620&quot;,
+    max_tokens=1024,
+    system=[
+        {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: SYSTEM, &quot;cache_control&quot;: {&quot;type&quot;: &quot;ephemeral&quot;}}
+    ],
+    messages=[...]
+)
+</code></pre>
+<p>他在博客上写了一篇《我用 Anthropic Prompt Caching 把成本砍了 70%》，48 小时内被 HN 顶到首页。评论区有人问："你为什么不试试 OpenAI 的 Prompt Caching？2024 年 10 月也出了。"</p>
+<p>李明愣了一下。他不知道 OpenAI 也出了。</p>
+<hr />
+<h3 id="13-prompt">1.3 一千个 prompt 不如一个能跑的</h3>
+<p>到 2024 年 7 月，李明意识到 prompt 工程的边界。</p>
+<p>他开始听到三个新词：<strong>Prompt Registry、Prompt Versioning、Prompt A/B Test</strong>。</p>
+<p>第一个用上是因为<strong>bug</strong>。某个用户在群里发："老板向给我输出成'亲，今天也要加油鸭'。" 李明翻了半天代码，发现是他在 6 月 19 日悄悄改了一版 system prompt，把结尾从"如需进一步说明，请随时联系我"改成了"如需进一步说明，请随时沟通鸭"。他自己都不记得。</p>
+<p>那一周他做了两件事：<br />
+1. 把所有 prompt 抽到 <code>prompts/</code> 目录，每个文件一个 yaml<br />
+2. 接了一个叫 <strong>DSPy</strong> 的库（Stanford NLP 在 2024 年 4 月开源的）—— 它能把 prompt 当作<strong>可编译的程序</strong>，自动用 few-shot 优化、用 BootstrapFewShot 选最优</p>
+<pre><code class="language-python"># DSPy style
+class WeeklyReport(dspy.Signature):
+    &quot;&quot;&quot;改写用户输入为周报&quot;&quot;&quot;
+    user_input = dspy.InputField()
+    audience = dspy.InputField()  # boss / peer / client
+    report = dspy.OutputField()
+
+class WriteReport(dspy.Module):
+    def __init__(self):
+        super().__init__()
+        self.write = dspy.ChainOfThought(WeeklyReport)
+    def forward(self, user_input, audience):
+        return self.write(user_input=user_input, audience=audience)
+
+# 自动优化
+optimizer = dspy.BootstrapFewShot(metric=my_metric, max_bootstrapped_demos=3)
+optimized = optimizer.compile(WriteReport(), trainset=trainset)
+</code></pre>
+<p>跑出来的 optimized prompt 比他手写的 11 版都好——不是好一点，是<strong>测出来的 11 个 benchmark 全过</strong>。他在公司群里发："我用 DSPy 把 prompt 工程化了，从今天起 prompt 有版本号、有 CI、有 metric。"</p>
+<p>他同事回了两个字："幼稚。"</p>
+<p>那个同事叫周野，是从阿里 P7 跳出来跟他一起干的。周野做前端，不懂 NLP，但懂工程。他问："你那个 metric 怎么算的？"</p>
+<p>李明说："我自己打的分。"</p>
+<p>周野："……如果你用你自己打的分训练一个 prompt，<strong>那这个 prompt 优化的是你</strong>。"</p>
+<p>李明想反驳，但发现没法反驳。</p>
+<p>那是 2024 年 7 月，他第一次意识到：<strong>prompt 的尽头是 eval</strong>。但 eval 是 L6 的事——中间还有 L2 到 L5 整整四层没盖。</p>
+<hr />
+<h3 id="14-prompt">1.4 prompt 是地基，但地基不盖房</h3>
+<p>2024 年 8 月 15 日，李明的周报助手用户数破 5000。</p>
+<p>他开始收到一类很奇怪的客服：</p>
+<blockquote>
+<p>"我想让它帮我查一下这周我做的工作 — 但我的工作散在 Jira / GitHub / 飞书 / 钉钉 4 个地方。"</p>
+</blockquote>
+<p>他回："先生，我们只接收粘贴的文本哦。"</p>
+<blockquote>
+<p>"那能不能让 AI 直接登录我的 Jira 帮我拉？"</p>
+</blockquote>
+<p>李明看着这行字，第一次在 prompt 工程的舒适区外感到无能为力。</p>
+<p><strong>prompt 让 AI 说话了。但它不能动。</strong></p>
+<p>他打开 Anthropic 文档，找到一个词：<strong>Tool Use</strong>。2024 年 4 月 Anthropic 推出 Claude 3 的 tool use 功能——让模型能在对话中<strong>调用外部函数</strong>。</p>
+<p>他在自己 SaaS 里加了一个 tool：</p>
+<pre><code class="language-python">tools = [
+    {
+        &quot;name&quot;: &quot;fetch_jira_issues&quot;,
+        &quot;description&quot;: &quot;从 Jira 拉取指定用户本周完成的 issue&quot;,
+        &quot;input_schema&quot;: {
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;properties&quot;: {
+                &quot;username&quot;: {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;Jira 用户名&quot;},
+                &quot;since_date&quot;: {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;ISO 格式起始日期&quot;}
+            },
+            &quot;required&quot;: [&quot;username&quot;, &quot;since_date&quot;]
+        }
+    }
+]
+msg = client.messages.create(
+    model=&quot;claude-3-5-sonnet-20240620&quot;,
+    tools=tools,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;拉一下李明这周做的 issue&quot;}]
+)
+print(msg.stop_reason)  # &quot;tool_use&quot;
+print(msg.content[0].input)  # {&quot;username&quot;: &quot;liming&quot;, &quot;since_date&quot;: &quot;2024-08-12&quot;}
+</code></pre>
+<p>模型不再只是"回邮件的助手"了——它能<strong>告诉系统"我要查 Jira"</strong>。剩下的是他在后端写一个真正的 Jira 客户端。</p>
+<p>那个 8 月 15 日的晚上，李明在博客写：</p>
+<blockquote>
+<p><em>今天我意识到 prompt 不是 SaaS 的全部。</em></p>
+<p><em>Prompt 是 L1 — 它让 AI 会说话。</em><br />
+<em>但要让 AI 真正帮人做事，它需要</em><em>工具</em><em>。</em><br />
+<em>Tool Use 是 L2。</em><br />
+<em>我们要爬第二层了。</em></p>
+</blockquote>
+<p>他在那篇博客的草稿里画了一张图：</p>
+<pre><code>L1 Prompt      ▢
+L2 Tools       □   ←  我们在这里
+L3 Memory      □
+L4 Skills      □
+L5 Subagents   □
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>七格。<strong>他要一层一层爬上去。</strong></p>
+<p>那年他 30 岁。SaaS 月入 12 万。在华强北的负一层瑞幸，他遇见了 AI 行业最贵的一句话："你只要会说话。"</p>
+<p>他不知道的是，这句话要花 18 个月才能真正兑现。</p>
+<hr />
+<p><strong>— 序章 + 第一章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- Anthropic Prompt Caching（2024-08，节省 90% 成本）<br />
+- Anthropic 《Prompt Engineering Overview》（2024-05）<br />
+- OpenAI Structured Outputs（2024-08）<br />
+- OpenAI Prompt Caching（2024-10）<br />
+- Lilian Weng《Prompt Engineering》（2023-03，2024-2025 多版更新）<br />
+- DSPy（Stanford NLP，2024-04 开源）<br />
+- Anthropic Tool Use / Claude 3（2024-04）</p>
+</blockquote>
+<h3 id="_9">下一章预告</h3>
+<p><strong>第二章 · L2 Tools — "让它能动手"</strong></p>
+<blockquote>
+<p>2024 年秋，李明发现 tool use 没那么简单。<br />
+模型会<strong>幻觉工具</strong>（调一个不存在的 API）、会<strong>死循环</strong>（重试同一个失败工具 30 次）、会<strong>忘记刚才调过什么</strong>（context window 被刷爆）。<br />
+他要解决三个问题：(1) 工具描述怎么写；(2) 工具失败怎么恢复；(3) 工具太多怎么选。<br />
+关键 case study：Anthropic Agentic Tool Use、MCP 协议、Function Calling 标准化、ToolBench。</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l2-tools">第二章 · L2 Tools — "让它能动手"</h2>
+<hr />
+<h3 id="21">2.1 第一个真问题：模型不调工具</h3>
+<p>2024 年 9 月，李明把周报助手接到了用户的 Jira。</p>
+<p>他写了 3 个工具：<code>fetch_jira_issues</code>、<code>search_jira_comments</code>、<code>create_jira_subtask</code>。system prompt 写得言简意赅：<em>"你可以使用工具查询 Jira 数据。当用户问 Jira 相关问题时主动调用。"</em></p>
+<p>跑了一周，命中率 30%——剩下 70% 的用户问题里，模型<strong>明明该调工具，却自己瞎编</strong>。用户问"我上周开了几个 issue"，它编了 4 个，Jira 里实际是 7 个。</p>
+<p>李明以为是 prompt 写得不够清楚。他加了 few-shot、加了 system prompt 的强调、加了"必须"二字——命中率爬到 45%，触顶了。</p>
+<p>同事周野看了一眼他的工具定义代码，说："你 description 写的是'从 Jira 拉取指定用户本周完成的 issue'。这个描述有两个问题：(1) 没说<strong>什么时候</strong>该调；(2) 参数描述只说了'Jira 用户名'，没说<strong>长什么样</strong>。"</p>
+<p>李明把 description 改成：</p>
+<pre><code class="language-python">{
+    &quot;name&quot;: &quot;fetch_jira_issues&quot;,
+    &quot;description&quot;: &quot;查询某个 Jira 用户在指定时间窗口内创建、解决、修改的 issue 列表。**当用户问&quot;我本周做了什么&quot;/&quot;上周任务&quot;/&quot;最近的 bug&quot;/&quot;我开的工单&quot;时必须调用此工具**，而不是靠记忆猜测。&quot;,
+    &quot;input_schema&quot;: {
+        &quot;type&quot;: &quot;object&quot;,
+        &quot;properties&quot;: {
+            &quot;username&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;description&quot;: &quot;Jira 登录用户名，格式为 firstname.lastname（小写，如 liming.zhang）&quot;
+            },
+            &quot;since_date&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;description&quot;: &quot;ISO 8601 起始日期（YYYY-MM-DD），窗口默认 7 天&quot;
+            },
+            &quot;status&quot;: {
+                &quot;type&quot;: &quot;string&quot;,
+                &quot;enum&quot;: [&quot;created&quot;, &quot;resolved&quot;, &quot;in_progress&quot;, &quot;all&quot;],
+                &quot;description&quot;: &quot;筛选 issue 状态，'created' = 用户创建的，'resolved' = 已完成的，'all' = 不过滤&quot;
+            }
+        },
+        &quot;required&quot;: [&quot;username&quot;, &quot;since_date&quot;]
+    }
+}
+</code></pre>
+<p>跑了一周：命中率 78%。</p>
+<p><strong>结论：工具的 description 不是 prompt 的一部分，它就是 prompt。</strong> 工具描述写不好，模型就不调；写得好，模型才能稳。</p>
+<p>这件事后来被 Anthropic 写进 2024 年 10 月的官方文档：<em>"Tool descriptions are read by the model as part of the prompt. Treat them like prompts: be specific, use examples when helpful, and tell the model when to use the tool vs. when to use a different one."</em></p>
+<p>李明在博客写："我花了一个月才搞明白——<strong>调工具不是 LLM 的本能，是被你教会的</strong>。"</p>
+<hr />
+<h3 id="22">2.2 第二个真问题：工具失败，模型死循环</h3>
+<p>2024 年 10 月，李明遇到一个怪事：用户的 Slack 收到了同一个 agent 连续发的 27 条一模一样的消息。每条消息都是"出错了"。</p>
+<p>他翻日志：那个用户的 agent 在调 <code>send_slack_message</code> 工具时，token 过期了，返回 401。但 agent 不知道 401 是什么意思——它<strong>重试了 27 次</strong>。</p>
+<p>那是他第一次意识到，<strong>模型对"失败"没有直觉</strong>。</p>
+<p>人类程序员看到 401，会"啊 token 过期了，我换一个"；模型看到 401，会"我没拿到结果，再试一次"，然后再 401，再试，再 401。</p>
+<p>李明做了一个 hack：在每个工具的 system prompt 末尾加一段"失败处理规则"——</p>
+<pre><code>当工具返回错误时：
+- 401/403: 立即停止，告诉用户&quot;权限不足，请联系管理员&quot;
+- 404: 立即停止，告诉用户&quot;找不到该资源&quot;
+- 429: 等待 Retry-After 头的秒数后重试，最多 3 次
+- 500/502/503: 重试 1 次，仍失败则告诉用户&quot;服务暂时不可用&quot;
+- 其他: 重试 1 次，仍失败则返回&quot;工具调用失败&quot;
+**绝不在同一工具上重试超过 3 次。**
+</code></pre>
+<p>跑了一周，27 条消息的 bug 没了。</p>
+<p>但李明知道这不是"工程化"，这是"贴膏药"——他把每个错误码的应对写死在 prompt 里。Anthropic 2024 年 11 月推出的 <strong>Tool Use 错误处理最佳实践</strong>也是这个思路，但更系统：</p>
+<ol>
+<li><strong>重试上限必须显式</strong>（写进 system prompt 或 wrapper 代码）</li>
+<li><strong>错误信息要清晰</strong>（API 返回"resource not found"远好于"err 404"）</li>
+<li><strong>失败可恢复的工具要 fallback</strong>（如搜索失败 → 降级到浏览）</li>
+</ol>
+<p>后来李明把这些写进了一个新文件 <code>prompts/tool_failure_protocol.md</code>，所有工具统一引用。</p>
+<p>那是他第一次有"工具操作系统"的概念。</p>
+<hr />
+<h3 id="23">2.3 第三个真问题：工具太多，模型选错</h3>
+<p>2024 年 12 月，李明的 SaaS 跑了大半年，工具数量从 3 个涨到 23 个。</p>
+<p>他没意识到工具太多是个问题——直到一个用户来反馈："我让 agent 查 Confluence 页面，它调了 <code>search_jira_issues</code>。" 工具完全选错了。</p>
+<p>根因：23 个工具的 description 都写"查询<strong>某个</strong>资源的<strong>某些</strong>信息"。模型分不清。</p>
+<p>解决方案有两个流派：<br />
+- <strong>流派 A：少即是多</strong> —— Anthropic 给 Claude Code 的官方哲学：<strong>"只提供 4 种能力原语：Read、Write、Execute、Connect。</strong> Bash 是通用适配器，模型通过 shell 组合完成一切。"<br />
+- <strong>流派 B：分层路由</strong> —— 用一个 "router" agent 先判断"用户要查 Jira 还是 Confluence"，再分发给专门的子 agent。</p>
+<p>李明选 A。他把 23 个工具砍到 4 个：</p>
+<pre><code class="language-python">tools = [
+    {&quot;name&quot;: &quot;Read&quot;,  &quot;description&quot;: &quot;读取任意文件或 URL 内容&quot;},
+    {&quot;name&quot;: &quot;Write&quot;, &quot;description&quot;: &quot;写入任意文件或 API（POST/PUT/PATCH）&quot;},
+    {&quot;name&quot;: &quot;Execute&quot;, &quot;description&quot;: &quot;执行任意 shell 命令（bash/python/node）&quot;},
+    {&quot;name&quot;: &quot;Connect&quot;, &quot;description&quot;: &quot;通过 OAuth 连接第三方服务（首次）&quot;}
+]
+</code></pre>
+<p>跑了一周，用户复现率下降 40%。原因：<strong>模型不擅长从 23 个相近工具里选，但它能把"查 Confluence"翻译成"curl https://xxx.atlassian.net/wiki/..."。</strong></p>
+<p>这件事后来在 Anthropic 内部有个非官方说法：<em>"Don't build 100 tools. Give the model a shell and let it compose."</em></p>
+<p>李明在博客写："<strong>工具的尽头是 shell。</strong>"</p>
+<p>他不知道的是，2024 年 11 月 OpenAI 已经悄悄在 ChatGPT 里加了一个 <strong>Code Interpreter</strong>——给模型的"工具"就是一个 Python sandbox，能跑任意 Python。同样的哲学。</p>
+<hr />
+<h3 id="24-mcp-webmcp">2.4 协议层：MCP 和 WebMCP</h3>
+<p>2024 年 11 月，Anthropic 推出了一个东西：<strong>Model Context Protocol (MCP)</strong>。</p>
+<p>MCP 的核心想法：<strong>工具不应该每个 SaaS 自己造轮子，应该有一个统一协议</strong>。</p>
+<pre><code>┌─────────────┐      ┌──────────────┐      ┌─────────────────┐
+│  Claude /   │ ←──→ │ MCP Server   │ ←──→ │  Jira / Notion  │
+│  GPT / etc  │ JSON │ (标准化接口)  │ JSON │  / Slack / ...  │
+└─────────────┘ RPC  └──────────────┘ RPC  └─────────────────┘
+</code></pre>
+<p>对开发者来说：以前写一个 Jira 工具，要分别给 Claude、GPT、Gemini 各写一份 SDK；现在写一个 MCP server，<strong>所有支持 MCP 的模型都能用</strong>。</p>
+<p>对李明来说：他把"调 4 个工具"改成"调 1 个 MCP client"，工具生态从此开放。</p>
+<p><strong>MCP 在 2025 年成为事实标准</strong>。OpenAI 在 2025 年 3 月正式支持，Google 在 2025 年 6 月，DeepSeek 在 2025 年 8 月。Replit、Codeium、Zed 都接了 MCP。</p>
+<p>然后是 <strong>WebMCP</strong>（2026 年 3 月 Chrome 推出）。WebMCP 让<strong>网站本身</strong>直接向浏览器内的 agent 暴露结构化工具，核心 API 是 <code>navigator.modelContext</code>。从此 agent 不用再"装得像人一样"截屏、找按钮、模拟点击——直接调 <code>navigator.modelContext</code> 拿网站工具。</p>
+<p>李明在 2026 年 3 月 23 日读到 WebMCP 文档，写：</p>
+<blockquote>
+<p><em>2024 年 9 月，我给 agent 写了 23 个工具。<br />
+2024 年 12 月，我砍到 4 个工具，理由是"模型擅长组合，不擅长选"。<br />
+2025 年，agent 用 MCP 调第三方 SaaS。<br />
+2026 年，</em><em>网站直接告诉 agent 怎么用自己</em>*。</p>
+<p>这是工具层最戏剧性的 18 个月。<br />
+我们从"教 agent 用工具"变成了"工具自己会介绍自己"。*</p>
+</blockquote>
+<p>他在那张图里改了一行：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣  ← 完成
+L3 Memory      □
+L4 Skills      □
+L5 Subagents   □
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>七层塔的第二层，盖完了。</p>
+<p>那年 12 月，他在备忘录写下：</p>
+<blockquote>
+<p>2024-12-15<br />
+L2 Tools 总结：<br />
+ - 工具 description = prompt 的一部分<br />
+ - 失败处理 = 必须显式<br />
+ - 工具数量 = 越少越好（4 个原语 &gt; 23 个细分）<br />
+ - MCP = 工具协议<br />
+ - WebMCP = 工具的"自描述"<br />
+ L3 主题：<strong>记忆</strong>。agent 用一周后开始"忘事"。</p>
+</blockquote>
+<hr />
+<p><strong>— 第二章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_1">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- Anthropic Agentic Tool Use Best Practices（2024-10/11）<br />
+- Claude Code "4 种能力原语" 哲学（Read/Write/Execute/Connect）<br />
+- <strong>"不要构建 100 个工具，给模型一个 shell，让它自己组合"</strong>（Anthropic 内部非官方）<br />
+- OpenAI Code Interpreter（2024）<br />
+- <strong>Model Context Protocol (MCP)</strong> —— Anthropic 2024-11 推出，2025 成为行业标准<br />
+- <strong>WebMCP</strong> —— 2026-03 Chrome 推出，核心 API <code>navigator.modelContext</code><br />
+- OpenAI MCP 支持（2025-03）/ Google Gemini MCP 支持（2025-06）</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l3-memory">第三章 · L3 Memory — "让它记得住"</h2>
+<hr />
+<h3 id="31">3.1 第十一天的失忆</h3>
+<p>2025 年 1 月，李明的周报助手跑到了 8,000 个付费用户。</p>
+<p>1 月 11 日，一个用户在群里发："我上周跟 agent 说过了，把语气改成更随意的，<strong>它现在又回到正式语气了</strong>。"</p>
+<p>李明翻用户的对话历史——确实，1 月 4 日用户说过"语气随意一点"。但 agent 在 1 月 11 日，<strong>完全不知道</strong>。</p>
+<p>根因他立刻查到了：</p>
+<ul>
+<li>用户和 agent 一次对话最多 50 轮</li>
+<li>用户的设置存在 system prompt 里</li>
+<li>1 月 4 日的"语气随意一点"是一条<strong>普通 user message</strong>，没有写进 system prompt</li>
+<li>一周后新开对话，system prompt 还是默认的"老板向/平级向/客户向"</li>
+<li>用户的偏好就这样被<strong>遗忘</strong>了</li>
+</ul>
+<p>这是 L3 Memory 的<strong>最基本问题</strong>——<strong>跨会话记忆</strong>。</p>
+<p>李明第一次意识到：上下文窗口（context window）不是 memory。<strong>上下文是一次对话的临时 RAM，memory 是用户用了几十次 agent 之后沉淀下来的偏好。</strong></p>
+<p>人类大脑也是这样：短期记忆（你说"我今天午饭吃了啥"）和长期记忆（"我喜欢吃辣"）是分开的。</p>
+<p>他在 L2 那张图旁边加了一行字：<em>"L3 才是 agent 真正的护城河。L1+L2 谁都能抄，memory 不能。"</em></p>
+<hr />
+<h3 id="32-kv-cache">3.2 KV Cache：被忽略的基础设施</h3>
+<p>在动手搭 memory 系统之前，李明意识到他得先搞懂一件事：<strong>context window 内部到底发生了什么</strong>。</p>
+<p>2025 年 2 月，他读到了 Lilian Weng 那篇著名的《LLM Powered Autonomous Agents》——2023 年首发，2025 年初更新过两次。其中关于 KV Cache 的解释让他豁然开朗。</p>
+<p><strong>KV Cache 是 LLM 推理的"短期记忆基础设施"</strong>。</p>
+<p>它解决的是自回归生成中的重复计算问题：模型生成第 N 个 token 时，需要"看"前 N-1 个 token。每一层 attention 都要算 (N-1) 个 key 和 value——每多生成一个 token，<strong>所有历史 K/V 都要重新算</strong>。</p>
+<p>KV Cache 把这些 K/V 缓存下来：生成第 N 个 token 时，<strong>只算第 N 个的 K/V，前面 N-1 个直接读 cache</strong>。没有 KV Cache，LLM 慢到不可用。</p>
+<p>但 KV Cache 是<strong>显存杀手</strong>。</p>
+<p>Lilian Weng 给了一组关键数据：</p>
+<blockquote>
+<p>128K 上下文时，LLaMA-2-7B 的 KV Cache（约 64GB）是模型权重（14GB）的 <strong>4.5 倍</strong>。</p>
+</blockquote>
+<p>李明看到这个数字，明白了为什么 GPU 那么贵——<strong>长上下文推理的显存瓶颈根本不在权重，而在缓存。</strong></p>
+<p>然后他学到了三条 KV Cache 优化路线：</p>
+<p><strong>路线 1：系统层</strong>——更聪明地管理显存<br />
+- <strong>PagedAttention</strong>（vLLM，2023）：把 KV Cache 分页管理，消除碎片，吞吐提升 2-4×<br />
+- <strong>Prefix Caching / RadixAttention</strong>（SGLang，2024）：复用相同前缀，RAG 场景吞吐提升 5-10×<br />
+- <strong>Chunked Prefill</strong>：避免长 Prefill 饿死 Decode 请求<br />
+- <strong>Mooncake</strong>（Moonshot，2024）：Prefill/Decode 集群物理分离，KV Cache 为中心调度</p>
+<p><strong>路线 2：架构层</strong>——从源头压缩</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>KV Cache 压缩率</th>
+<th>代表模型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MHA</td>
+<td>100% (baseline)</td>
+<td>LLaMA-2-7B</td>
+</tr>
+<tr>
+<td>MQA</td>
+<td>~96.9% 压缩</td>
+<td>PaLM, Falcon</td>
+</tr>
+<tr>
+<td>GQA</td>
+<td>75-87.5% 压缩</td>
+<td>LLaMA-3, Qwen2</td>
+</tr>
+<tr>
+<td><strong>MLA</strong></td>
+<td><strong>~93% 压缩</strong></td>
+<td><strong>DeepSeek-V2</strong></td>
+</tr>
+</tbody>
+</table>
+<p>MLA（Multi-Latent Attention）是 DeepSeek-V2 的杀招——把 KV 压到一个<strong>低秩潜空间</strong>，显存直接砍 93%。这就是 DeepSeek 论文里"$0.14/M input token"价格的物理基础。</p>
+<p><strong>路线 3：算法层</strong>——动态裁剪<br />
+- <strong>PyramidKV</strong>（2024）：只保留 12% 的 KV Cache，性能与全量相当<br />
+- 量化（INT8/INT4 KV）：进一步减少显存占用</p>
+<p>李明看完这三层优化，对 KV Cache 的理解从"听不懂"变成了"明白瓶颈在哪"。</p>
+<p>但他很快意识到：<strong>KV Cache 是 LLM 推理的"上下文"，不是 agent 的"memory"。</strong> 两者根本不是一回事——KV Cache 在一次请求结束就释放，memory 必须跨请求、跨会话、甚至跨用户保留。</p>
+<p>所以他要做的不是优化 KV Cache，而是<strong>在 KV Cache 之上搭一层真正的 memory 系统</strong>。</p>
+<hr />
+<h3 id="33-l0-l1-l2-l3">3.3 三层记忆：L0 / L1 / L2 / L3</h3>
+<p>2025 年 3 月，李明读到了一篇对他影响最大的文章：<strong>《TencentDB Agent Memory：任何错误只犯一次》</strong>。</p>
+<p>TencentDB 是腾讯云内部搞的一个团队级 agent 记忆系统，2,600 个 session → 5,081 个 task → 22,361 个 canonical relation。论文里给出了一个<strong>四层记忆架构</strong>：</p>
+<pre><code>L0 原始对话：        完整保留对话历史
+L1 原子事实：        拆出&quot;李明是后端&quot;、&quot;用户喜欢随意语气&quot;等可独立调用的 fact
+L2 场景记忆：        &quot;用户做周报用&quot;、&quot;用户每周五做总结&quot;等场景级偏好
+L3 稳定认知：        &quot;李明是个谨慎的人，改动前会反复确认&quot;等高度抽象的稳定判断
+</code></pre>
+<p>李明立刻把这个框架套到了自己的周报助手上。</p>
+<p><strong>L0 原始对话</strong>——直接把对话历史存数据库。简单，但 1 周后查起来慢、占空间。</p>
+<p><strong>L1 原子事实</strong>——用 LLM 定期从对话中抽 fact：</p>
+<pre><code class="language-python">async def extract_atomic_facts(conversation: list[dict]) -&gt; list[str]:
+    prompt = &quot;&quot;&quot;从以下对话中提取用户的事实性偏好/属性。每条 fact 一句话，不要重复。
+    输出 JSON 数组。&quot;&quot;&quot;
+    # 调用 LLM，得到 [&quot;李明喜欢随意语气&quot;, &quot;李明在腾讯云&quot;, ...]
+</code></pre>
+<p><strong>L2 场景记忆</strong>——把"在哪用"和"怎么用"分开。</p>
+<p><strong>L3 稳定认知</strong>——只有跨多周仍出现的判断才进 L3，进 L3 后几乎不变。</p>
+<p>李明花了两周搭出一个 v0.1：</p>
+<ul>
+<li>L0 全保留</li>
+<li>L1 每天 cron 跑一次 LLM 抽取</li>
+<li>L2/L3 暂时人工 review</li>
+</ul>
+<p>跑了一周，用户的"语气偏好"问题大幅改善——一个用户被问"上周跟 agent 说过啥"，它能准确说出来"你 1 月 4 日说过喜欢随意语气"。</p>
+<p>但这只是个开始。L1 抽取有<strong>幻觉问题</strong>——LLM 会"捏造"用户没说过的事。</p>
+<hr />
+<h3 id="34-memory">3.4 Memory 的四个核心难题</h3>
+<p>2025 年 5 月，李明读了 <strong>MemoryAgentBench</strong>（一个 memory 评测基准），意识到他做的 L1 抽取远远不够。</p>
+<p>MemoryAgentBench 测了 4 大能力：</p>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>含义</th>
+<th>谁最强</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AR</strong>（Accurate Retrieval）</td>
+<td>从长对话历史检索重要信息</td>
+<td>RAG</td>
+</tr>
+<tr>
+<td><strong>TTL</strong>（Test-Time Learning）</td>
+<td>动态获取新技能（类比 ICL）</td>
+<td>长上下文</td>
+</tr>
+<tr>
+<td><strong>LRU</strong>（Long-Range Understanding）</td>
+<td>长对话形成抽象理解</td>
+<td>长上下文</td>
+</tr>
+<tr>
+<td><strong>CR</strong>（Conflict Resolution）</td>
+<td>面对新旧信息冲突解决矛盾</td>
+<td><strong>所有方法都差</strong>（多跳 6%）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conflict Resolution（冲突解决）</strong> 这一项让李明看了 5 遍。</p>
+<p>想象一个场景：</p>
+<blockquote>
+<p>1 月 4 日：用户说"我喜欢随意语气"<br />
+2 月 1 日：用户说"我现在要写正式商务邮件，请用正式语气"</p>
+</blockquote>
+<p>agent 面对这两个 fact 怎么办？简单 RAG 会把两条都返回，模型混乱；朴素 memory 会"更新"——把"随意"覆盖成"正式"——但如果<strong>这次只是临时需要</strong>呢？</p>
+<p>MemoryAgentBench 数据显示：<strong>所有方法在 CR（冲突解决）多跳场景下都只达到 6% 准确率</strong>。这是 memory 系统最大的未解难题。</p>
+<p>李明意识到：memory 不是"记住所有事"，是"在矛盾中做出对的判断"。这跟人类记忆一样——你记得"我喜欢 X"，但你也记得"这次不一样"。</p>
+<p>他的 v0.2 加了一个简单的"时间戳 + 上下文指纹"——同一 fact 在不同时间被调取时，根据"调用时上下文"决定返回哪一版本。但这只是 hack。</p>
+<hr />
+<h3 id="35-mem0-theanine-rmm">3.5 三种主流方案：Mem0 / THEANINE / RMM</h3>
+<p>2025 年 6 月，李明集中调研了当时最火的三种 memory 方案：</p>
+<p><strong>方案 1：Mem0</strong>（2024-2025，最火的开源 memory 库）</p>
+<p>Mem0 的核心思想是 <strong>"memory as a service"</strong>——给 agent 加一个 memory layer，自动抽取、存储、检索 fact。Mem0 论文（arXiv:2504.19413）在 2025 年 4 月发布，号称在 LOCOMO 基准上比全上下文方法<strong>准确率提升 26%</strong>、<strong>token 成本降低 91%</strong>。</p>
+<p>李明用 Mem0 替换自己的 L1 抽取模块，跑了一周发现：Mem0 的 fact 抽取比他自己写的好很多（用了更精细的 prompt + 嵌入检索），但仍然有 5% 的幻觉率。</p>
+<p><strong>方案 2：THEANINE</strong>（2024 论文）</p>
+<p>THEANINE 的设计哲学是<strong>"反思记忆"</strong>——不只是记 fact，还记 fact 之间的反思。比如不仅记"用户喜欢随意语气"，还记"用户改过 3 次语气偏好，每次改都对应他写邮件对象的改变"。</p>
+<p>这个层次太高，李明用不上。</p>
+<p><strong>方案 3：RMM</strong>（Reflexion Memory Model，2025）</p>
+<p>RMM 是斯坦福 + Salesforce 合作的，把 memory 拆成"短期"、"长期"、"反思"三层，类似 TencentDB 的 L0/L1/L2 但更工程化。RMM 在客服场景有 18% 准确率提升。</p>
+<p><strong>李明最终选了 Mem0 + 自己加的"时间戳版本"</strong>。**</p>
+<p>那个 6 月的晚上，他在博客写：</p>
+<blockquote>
+<p><em>Memory 是 agent 的"性格"。</em><br />
+<em>没有 memory 的 agent 是工具——你让它干啥它干啥。</em><br />
+<em>有 memory 的 agent 是助理——它记得你上次说过啥，知道你今天为啥换了语气，能在矛盾中帮你做对选择。</em><br />
+<em>但今天我们还做不到 100%——Conflict Resolution 还是 6%。</em><br />
+<em>这是 2025 年 memory 领域最大的开放问题。</em></p>
+</blockquote>
+<hr />
+<h3 id="36-vs-ai-memory-teamai-cli">3.6 个人 vs 团队：ai-memory 和 teamai-cli</h3>
+<p>到 2025 年 9 月，李明意识到 memory 还有第二维度——<strong>单 agent vs 跨 agent</strong>。</p>
+<p><strong>个人级：ai-memory</strong>（Fabio Akita，2026-08 开源）</p>
+<p>ai-memory 是个 Rust 单二进制，挂在每个 agent 的 lifecycle hooks 上。它有三个反直觉设计：</p>
+<ol>
+<li><strong>"编译不要检索"</strong>——Karpathy 思路，会话结束把观察流<strong>编译成可读 markdown 页面</strong>而不是 RAG 检索</li>
+<li><strong>记忆跟着项目走不跟着工具走</strong>——同一 repo 跨 agent 共享 memory</li>
+<li><strong>存储反主流</strong>——git 版本化纯 markdown + SQLite FTS5 + 图邻居检索，<strong>不强制向量数据库</strong></li>
+</ol>
+<p><strong>团队级：teamai-cli</strong>（腾讯，2026-08）</p>
+<p>teamai-cli 把 20+ AI 编程工具的 Skills/Rules/Docs/Hooks/MCP 配置统一到一个 Git 仓库分发，SessionStart Hook 自动 <code>teamai pull</code>。它的"摩擦信号"机制让 agent 主动建议 <code>/teamai-share-learnings</code>——也就是"和 AI 搏斗过"的会话沉淀为团队资产。</p>
+<p>李明那一年同时接入了 ai-memory（个人层）和 teamai-cli（团队层）——后者他用在自己公司 3 人小团队里，每天省 1 小时"写文档"时间。</p>
+<hr />
+<h3 id="37-l3">3.7 终局：L3 没盖完的楼</h3>
+<p>2025 年 12 月，李明给一个 VC 投资人做 demo。投资人问了一个问题：</p>
+<p>"如果 OpenAI 自己也做 memory，你的护城河在哪？"</p>
+<p>李明愣了 5 秒，然后说：</p>
+<blockquote>
+<p><em>个人偏好这件事，永远有 20% 是个性化的、模型厂商搞不定的。</em><br />
+<em>比如"我老板姓周，提到他时语气要更正式一点"——这件事 OpenAI 不知道，因为它是你的个人上下文。</em><br />
+<em>memory 的护城河不是技术，是</em><em>用户愿意把多少个人上下文交给你</em><em>。</em></p>
+</blockquote>
+<p>那晚他在那张图改了一行：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣  ← 部分完成（CR 还没解决）
+L4 Skills      □
+L5 Subagents   □
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>L3 没有完全盖完——conflict resolution 还是 6%。但 80% 的用户问题已经被解决了。</p>
+<p>那年他在备忘录里写下：</p>
+<blockquote>
+<p>2025-12-30<br />
+L3 Memory 总结：<br />
+ - KV Cache 是推理的"短期"，不是 memory<br />
+ - 真正的 memory = L0/L1/L2/L3 四层<br />
+ - Mem0 / THEANINE / RMM 三大方案<br />
+ - 冲突解决（CR）是 2026 年开放问题<br />
+ - 个人 vs 团队：ai-memory + teamai-cli<br />
+ L4 主题：<strong>Skill</strong>。agent 什么都能干，但什么都不精。</p>
+</blockquote>
+<hr />
+<p><strong>— 第三章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_2">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- <strong>Lilian Weng《LLM Powered Autonomous Agents》</strong>（2023-08，2025 更新）<br />
+- <strong>TencentDB Agent Memory</strong> —— 4 层记忆架构 L0/L1/L2/L3（2025-08）<br />
+- <strong>KV Cache 优化三大路线</strong>：vLLM PagedAttention / SGLang RadixAttention / DeepSeek-V2 MLA / PyramidKV<br />
+- <strong>MemoryAgentBench</strong> —— 4 大能力（AR/TTL/LRU/CR），CR 多跳仅 6%<br />
+- <strong>Mem0</strong>（arXiv:2504.19413，2025-04）—— LOCOMO 准确率 +26% / 成本 -91%<br />
+- <strong>THEANINE</strong> / <strong>RMM</strong>（Reflexion Memory Model，2025）<br />
+- <strong>ai-memory</strong>（Fabio Akita，2026-08，Rust 单二进制）<br />
+- <strong>teamai-cli</strong>（腾讯，2026-08）</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l4-skills">第四章 · L4 Skills — "让它会专项"</h2>
+<hr />
+<h3 id="41">4.1 "什么都能干，但什么都不精"</h3>
+<p>2026 年 2 月，李明的周报助手跑了一年半。</p>
+<p>用户数到了 3 万。营收稳定在每月 80 万。但他接到一类越来越频繁的反馈：</p>
+<blockquote>
+<p><em>"我让 agent 帮我做 OKR 总结，它写得跟周报一个味儿。"</em></p>
+<p><em>"我让 agent 帮我做技术方案评审，它只会说'看起来不错'。"</em></p>
+<p><em>"我让 agent 帮我做产品需求拆解，它拆出来的东西很水。"</em></p>
+</blockquote>
+<p>李明花了一周访谈 20 个用户，发现同一个规律：<strong>通用 agent 在每个领域都"看起来能用"，但真正专业的人一眼看出"不够深"</strong>。</p>
+<p>他想起 Anthropic 2025 年 9 月那篇文章里的一句话：<em>"Skill 的作用不是让 AI 更聪明，而是让 AI 在你的业务里更可靠。</em><em>训练 Skill 不是抬高上限（capability），而是抬高下限（reliability）</em><em>。"</em></p>
+<p>L4 Skills 不是给 agent 增加新能力，是<strong>给 agent 装上"专业技能包"</strong>。</p>
+<hr />
+<h3 id="42-skill-v2">4.2 第一个 Skill：周报 v2</h3>
+<p>2026 年 2 月 14 日，李明开始给周报助手写第一个 Skill。</p>
+<p>他以前写的 prompt 是一坨 system prompt，长这样：</p>
+<pre><code class="language-markdown">你是一个专业的周报写作助手。请根据用户的输入改写成正式/平级/客户向的周报。
+风格要求...
+输出结构...
+</code></pre>
+<p>现在他把它<strong>结构化成 Skill</strong>：</p>
+<pre><code>weekly-report/
+└── SKILL.md
+</code></pre>
+<p><code>SKILL.md</code> 长这样：</p>
+<pre><code class="language-markdown">---
+name: weekly-report
+description: 改写用户的工作日志为周报。当用户说&quot;做周报&quot;/&quot;写周报&quot;/&quot;weekly report&quot;时使用。
+---
+
+# 周报助手
+
+## 适用场景
+用户提供了本周的工作记录（口语化），需要输出结构化周报。
+
+## 风格选项
+- 老板向：见 assets/style-boss.md
+- 平级向：见 assets/style-peer.md
+- 客户向：见 assets/style-client.md
+
+## 关键约束
+1. 必须保留所有数字（百分比、金额、个数）
+2. 必须明确区分&quot;已完成&quot;和&quot;进行中&quot;
+3. 不能编造用户没说过的工作
+4. 输出用 markdown 标题分级
+
+## 失败处理
+- 如果用户的输入太短（&lt; 20 字），先追问&quot;你本周做了哪些事？&quot;
+- 如果用户的输入只有工作没数据，主动问&quot;有没有数字？&quot;
+
+## 输出模板
+见 assets/template.md
+</code></pre>
+<p>跑了一周，用户反馈"专业感"提升 30%。</p>
+<p>李明后来总结：<strong>prompt 是"对一次对话的指令"，Skill 是"对一类任务的封装"</strong>。prompt 是一次性的，Skill 是<strong>可复用、可自动触发、可持续优化</strong>的。</p>
+<hr />
+<h3 id="43-skill">4.3 Skill 的三层加载架构</h3>
+<p>到 2026 年 4 月，李明已经写了 7 个 Skill（周报、OKR、需求评审、技术方案、客户邮件、月度汇报、项目周会）。</p>
+<p>他遇到一个新问题：每次 agent 启动，<strong>7 个 Skill 的完整 SKILL.md 都被加载到 context window 里</strong>。一个 SKILL.md 平均 800 token，7 个就是 5,600 token——占满了 1/10 的 context window。</p>
+<p>后来他在 Anthropic 2025 年 12 月的官方文档里找到了答案：<strong>三层加载架构</strong>。</p>
+<pre><code>1. 发现层（Discovery）：Agent 启动时只加载极简元数据
+   - Skill 名称
+   - 几十 token 的 description
+   - 触发条件
+
+2. 激活层（Activation）：用户请求命中触发条件时才载入
+   - 完整 SKILL.md 正文
+   - 关联的 assets/
+
+3. 执行层（Execution）：根据指令动态读取
+   - 配套文件
+   - 静默执行沙盒验证脚本
+</code></pre>
+<p>实现方式：</p>
+<pre><code class="language-python"># 启动时只加载元数据
+skill_metadata = {
+    &quot;weekly-report&quot;: {
+        &quot;description&quot;: &quot;改写用户的工作日志为周报&quot;,
+        &quot;trigger_keywords&quot;: [&quot;周报&quot;, &quot;weekly&quot;, &quot;周总结&quot;]
+    },
+    &quot;okr-summary&quot;: {
+        &quot;description&quot;: &quot;把 OKR 进度总结成可汇报的版本&quot;,
+        &quot;trigger_keywords&quot;: [&quot;OKR&quot;, &quot;目标回顾&quot;, &quot;objective&quot;]
+    }
+    # ...
+}
+
+# 用户消息进来时，判断是否触发某个 Skill
+def detect_skill(user_message: str) -&gt; str | None:
+    for skill_name, meta in skill_metadata.items():
+        for kw in meta[&quot;trigger_keywords&quot;]:
+            if kw in user_message:
+                return skill_name
+    return None
+
+# 命中后再加载完整 SKILL.md
+if skill := detect_skill(msg):
+    full_skill = load_skill_md(f&quot;skills/{skill}/SKILL.md&quot;)
+    system_prompt = base_prompt + &quot;\n\n&quot; + full_skill
+</code></pre>
+<p>7 个 Skill 启动开销从 5,600 token 降到 400 token。</p>
+<p><strong>Skill 让 agent 拥有"可插拔的专业能力"，而不污染基础 context。</strong></p>
+<hr />
+<h3 id="44-skill">4.4 训练 Skill 的四个方法</h3>
+<p>2026 年 5 月，李明在 Anthropic 开发者大会上听到一句话——<em>"Skill 是给 AI 装'专业肌肉记忆'，不是给 AI 装'新大脑'"</em>。</p>
+<p>他把这句话记下来，衍生出训练 Skill 的四个方法：</p>
+<p><strong>方法 1：先跑通，再封装</strong><br />
+不要在脑子里设计 Skill。要在真实对话里<strong>先让 agent 跑任务</strong>——记录下它哪里做错了、哪里做对了——然后把"对的做法"固化进 SKILL.md。</p>
+<p><strong>方法 2：不止写"做什么"，还要写"怎么做"</strong><br />
+李明自己踩过的坑：</p>
+<ul>
+<li>❌ 坏写法：<code>请仔细检查页面的所有元素</code></li>
+<li>✅ 好写法：<code>当页面存在 Tab/展开行时，必须执行 DOM 枚举：document.querySelectorAll('[role="tab"]')</code></li>
+</ul>
+<p>区别：<strong>坏写法假设 AI 知道"仔细"是多仔细，好写法把"仔细"翻译成可执行步骤</strong>。</p>
+<p><strong>方法 3：配 checklist 和门禁</strong></p>
+<pre><code class="language-markdown">## 改写流程（带门禁）
+1. ✅ 提取原文所有数字
+   ↓ (没数字 → 问用户)
+2. ✅ 识别每条工作的完成度（已完成/进行中/未启动）
+   ↓ (无法判断 → 标记&quot;未指明&quot;)
+3. ✅ 套用风格模板
+4. ✅ 输出结构化 markdown
+</code></pre>
+<p>每一项是上一项的"门禁"——上一项没过，下一项不能开始。</p>
+<p><strong>方法 4：让 AI 参与复盘并自动改 Skill</strong><br />
+这是 L7 的伏笔，但 Skill 层面就能用。</p>
+<pre><code class="language-bash"># 跑完一个真实任务后
+python skill_retrospect.py --skill weekly-report --last-task task_12345
+
+# 输出：
+# - 这次跑哪里错了
+# - SKILL.md 哪段没说清楚
+# - 建议改写: &quot;把&quot;如果用户输入太短先追问&quot;改为&quot;如果用户的输入 &lt; 20 字或不含任何动作动词，先追问&quot;具体做了哪些事？&quot;
+</code></pre>
+<p><strong>跑一遍 → 复盘 → 让 AI 改 SKILL.md → 再跑一遍</strong>。这是 Skill 的<strong>训练闭环</strong>。</p>
+<hr />
+<h3 id="45-skill-8">4.5 Skill 生态：8 个值得知道的项目</h3>
+<p>到 2026 年 6 月，李明发现 Skill 已经不是 Anthropic 一家的事了——整个行业都在做 Skill。</p>
+<p><strong>Anthropic Skills</strong>（2024-10 推出，2025-2026 持续更新）<br />
+官方 Skill 库，包括 <code>pdf</code>、<code>docx</code>、<code>xlsx</code>、<code>pptx</code> 等。每个 Skill 是一个有 <code>SKILL.md</code> 的文件夹。</p>
+<p><strong>求是 Skill</strong>（2026-04 开源，GitHub 2k+ Star）<br />
+一个基于<strong>毛选方法论</strong>的 Skill 武装框架——把"矛盾论"、"实践论"、"论持久战"的方法论转成 Skill，让 agent 在做决策时按毛的方法论走。</p>
+<p>李明在朋友圈看到有人用它做"产品决策辅助"，笑说："<strong>让 agent 用毛的思想做 OKR，比让 agent 用 OKR 模板更靠谱。</strong>"</p>
+<p><strong>MiniMax-AI/skills vs OfficeCLI</strong>（2026-04 平台对比）<br />
+两条路线：<br />
+- <strong>平台路线</strong>（MiniMax-AI/skills）：让所有 Skill 在一个平台分发<br />
+- <strong>专家路线</strong>（OfficeCLI）：让某个垂直领域专家写一个"全包" Skill</p>
+<p>李明选专家路线——周报助手就是"周报这个垂直领域的专家"。</p>
+<p><strong>Skillify / SkillOS / SkillSpector / SkillLens / SkillScan</strong><br />
+Skill 工具链：<br />
+- <strong>Skillify</strong>：把对话记录自动转 Skill<br />
+- <strong>SkillOS</strong>：Skill 的运行操作系统（让 Skill 之间能调用）<br />
+- <strong>SkillSpector</strong>：可视化 Skill 调用链<br />
+- <strong>SkillLens</strong>：搜索所有公开 Skill<br />
+- <strong>SkillScan</strong>：检测 Skill 是否有安全风险</p>
+<p>李明当时用 Skillify 把过去 3 个月的对话转了 12 个 Skill——<strong>80% 是重复的他已经手动写过，20% 是"原来还能这样用"的新发现</strong>。</p>
+<p><strong>Skills-Oriented Programming（SOP）</strong><br />
+2026 年 5 月，Anthropic 在一份白皮书里提出了这个概念——<strong>未来的编程不是写代码 + 写 prompt，而是写 Skill</strong>。一个项目 = 一组 Skill + 一段 orchestrator 代码。</p>
+<p>李明看完那份白皮书，对自己说：</p>
+<blockquote>
+<p><em>我 30 岁，前 8 年写 Java，后 2 年写 prompt。</em><br />
+<em>下一个 10 年，可能要写 Skill。</em></p>
+</blockquote>
+<hr />
+<h3 id="46-skill">4.6 Skill 的真正意义：把"知道"变成"会做"</h3>
+<p>2026 年 7 月，李明做了最后一次用户调研。</p>
+<p>他发现一个意外的数据：装了 7 个 Skill 的用户，留存率比只装 1 个 Skill 的高 <strong>3 倍</strong>。</p>
+<p>不是 7 &gt; 1 的 7 倍。是 3 倍。</p>
+<p>他想了 3 天，问了 10 个老用户，最后得出一个结论：</p>
+<blockquote>
+<p><strong><em>Skill 改变了用户的"心理账户"。</em></strong></p>
+<p><em>没装 Skill 时，用户每次用 agent 都要"重新教它怎么干"——心理上是"我要教新人干活"。</em><br />
+<em>装上 Skill 后，用户心理上是"我要用专业工具"——Skill 给了用户"按按钮"的掌控感。</em><br />
+<em>掌控感 = 留存。</em></p>
+</blockquote>
+<p>他在博客写：</p>
+<blockquote>
+<p><em>Skill 真正的护城河不是"AI 会不会"，是"用户信不信"。</em><br />
+<em>AI 会不会可以靠 prompt 解决。</em><br />
+<em>用户信不信只能靠 Skill 解决——因为 Skill 是"确定的、可复用的、有依据的"。</em><br />
+<em>它把 agent 从"工具"变成了"同事"——一个你信任的同事，会把它的方法论写下来，每次用同样的方法。</em></p>
+</blockquote>
+<p>那年他给那张图改了两行：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣  ← 部分
+L4 Skills      ▣  ← 完成
+L5 Subagents   □
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>四层盖完了。</p>
+<hr />
+<h3 id="47-l5">4.7 尾声：L5 是什么</h3>
+<p>2026 年 8 月，李明收到一封邮件。</p>
+<p>邮件来自一个斯坦福博士生，写的是：</p>
+<blockquote>
+<p><em>"李明你好，我是 shepherd-agents 的开发者 Manning 组。看了你的周报助手的实现，想问：你的 agent 在跑一个 5 步任务时，每步是同一个 agent 吗？如果是，你有没有考虑过'每步用专门的子 agent'？我们做了一个 Git 原生的 agent 框架，把每步封装成可回退的 Commit，主 agent 只负责'调用子 agent'。Token 成本降了 30%。"</em></p>
+</blockquote>
+<p>李明回他：</p>
+<blockquote>
+<p><em>还没有。但我最近的用户反馈里，有一类是"agent 跑长任务时 context window 不够用了"。</em><br />
+<em>你说的"子 agent 作为上下文防火墙"——这正是我 L5 的方向。</em><br />
+<em>下个月我们能不能语音聊一下？</em></p>
+</blockquote>
+<p>他打开那张图，在 L5 旁边画了一个问号：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣
+L4 Skills      ▣
+L5 Subagents   ?  ← 要研究
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>那晚他在备忘录里写下：</p>
+<blockquote>
+<p>2026-08-15<br />
+L4 Skills 总结：<br />
+ - Skill = 可复用 + 可自动触发 + 持续优化<br />
+ - 三层加载：发现（40 token）/ 激活（800 token）/ 执行（动态）<br />
+ - 训练方法：跑通再封装、做什么 + 怎么做、checklist、复盘改 Skill<br />
+ - 生态：Anthropic Skills / 求是 Skill / Skillify / Skills-Oriented Programming<br />
+ - 护城河：从"AI 会不会"变成"用户信不信"<br />
+ L5 主题：<strong>Subagents</strong>。一个 agent 干所有事干不动了，要拆。</p>
+</blockquote>
+<hr />
+<p><strong>— 第四章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_3">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- <strong>Anthropic Skills</strong> 官方库（pdf/docx/xlsx/pptx，2024-10 推出）<br />
+- <strong>Anthropic "Skill 三层加载架构"</strong>（2025-12）<br />
+- <strong>核心洞察："Skill 不是抬高上限，而是抬高下限（reliability）"</strong><br />
+- <strong>求是 Skill</strong>（2026-04 开源，毛选方法论武装，GitHub 2k+ Star）<br />
+- <strong>MiniMax-AI/skills vs OfficeCLI</strong> 平台路线 vs 专家路线（2026-04）<br />
+- <strong>Skillify / SkillOS / SkillSpector / SkillLens / SkillScan</strong> Skill 工具链<br />
+- <strong>Skills-Oriented Programming（SOP）</strong> Anthropic 白皮书（2026-05）<br />
+- <strong>Shepherd</strong>（Stanford Manning 组，2026-08，Git 原生 agent 框架，每步可回退 Commit，Token 成本 -30%）—— 引出 L5</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l5-subagents">第五章 · L5 Subagents — "让它会叫人"</h2>
+<hr />
+<h3 id="51-51">5.1 第 51 个文件</h3>
+<p>2026 年 8 月 23 日，李明的周报助手崩了。</p>
+<p>他早上 9 点打开 Vercel 的 dashboard，看到报错数从昨晚 11 点的 3 跳到 6 点的 5,200。报错全是同一个：<code>context_length_exceeded</code>。</p>
+<p>他翻用户的报错上下文——那是个用了半年的老用户，对话历史积累了 200 多轮。agent 跑到一半，把所有工具调用记录、few-shot 例子、用户偏好、历史对话全塞进了 context window——单条 8 万 token，claude-sonnet-4.5 的 200K context window 撑爆了。</p>
+<p>李明团队花了 2 天 debug，结论是：<strong>单个 agent 的 context window 是有上限的，不管你多会管理 memory。</strong></p>
+<p><strong>单 agent 不是万能药。</strong></p>
+<p>这是 L5 的<strong>第一个真问题</strong>——<strong>上下文雪崩</strong>。</p>
+<p>腾讯程序员 2026 年 7 月那篇《Vibe Coding 三个致命问题》写过：</p>
+<blockquote>
+<p><em>"项目超过 50 个文件，Agent 开始'忘事'（user_id 第 1 天 vs uid 第 3 天）。"</em></p>
+</blockquote>
+<p>李明那个用户的对话历史虽然没有 50 个文件，但<strong>累积 200 轮对话</strong>触发了同样的雪崩。</p>
+<hr />
+<h3 id="52-agent">5.2 第一次拆 agent</h3>
+<p>2026 年 8 月 26 日，李明开始拆 agent。</p>
+<p>他的第一反应是把所有用户偏好"挪出去"——做一个 preferences 工具，每次新对话时主动拉取。跑了一周，问题更严重：用户对话中产生的新偏好<strong>来不及同步到 preferences 工具</strong>。</p>
+<p>他试了第二种方案——<strong>子 agent</strong>：</p>
+<pre><code>                ┌─────────────┐
+                │ Main Agent  │
+                │ (orchestrator) │
+                └──────┬──────┘
+                       │
+        ┌──────────────┼──────────────┐
+        │              │              │
+        ▼              ▼              ▼
+   ┌─────────┐   ┌──────────┐   ┌──────────┐
+   │ Subagent│   │ Subagent │   │ Subagent │
+   │ (Jira)  │   │ (周报)   │   │ (Skill)  │
+   └─────────┘   └──────────┘   └──────────┘
+</code></pre>
+<p>具体场景：用户问"我这周做了啥，给我写个周报"。</p>
+<ul>
+<li>Main agent 接住请求</li>
+<li>调 Subagent("Jira")：拉取 issue 列表</li>
+<li>调 Subagent("周报")：基于 issue 写周报</li>
+<li>Main agent 拼装结果</li>
+</ul>
+<p>关键设计：<strong>每个 Subagent 有自己独立的 context window，互不污染</strong>。</p>
+<pre><code class="language-python">async def run_with_subagent(user_message: str):
+    # 1. Main agent 决定要不要拆
+    plan = await main_agent.plan(user_message)
+
+    if plan.needs_subagent(&quot;jira&quot;):
+        # 2. Subagent 跑，context 完全隔离
+        jira_data = await jira_subagent.run(plan.subtask)
+
+    if plan.needs_subagent(&quot;report&quot;):
+        report = await report_subagent.run(
+            input=jira_data,
+            style=user.preferences.style
+        )
+
+    # 3. Main agent 拿到结果，回复用户
+    return await main_agent.synthesize(report)
+</code></pre>
+<p>李明跑了一周，<strong>雪崩问题解决了</strong>——Subagent 的 context 是干净的，每次新请求从头开始。</p>
+<p>但他发现一个新问题：<strong>token 成本涨了 40%</strong>。</p>
+<p>每个 Subagent 都要重新加载 system prompt、few-shot 例子、工具定义——这些"基础设施"被重复算了 N 次。</p>
+<p>李明在博客写：</p>
+<blockquote>
+<p><em>L5 是个悖论——拆 agent 解决了 context window 撑爆的问题，但每个 Subagent 都要重新算一次基础设施，token 成本反而涨了。</em><br />
+<em>解决方法是 </em><em>prompt caching</em><em>——把基础设施缓存到 KV cache 里，Subagent 复用。</em><br />
+<em>Anthropic 2024 年的 Prompt Caching（省 90% 成本）和 2025 年的 Extended Caching（1 小时 TTL）就是为了这个场景设计的。</em></p>
+</blockquote>
+<p>他用 5 行代码接入了 caching：</p>
+<pre><code class="language-python">subagent = anthropic.Anthropic()
+msg = subagent.messages.create(
+    model=&quot;claude-sonnet-4-5&quot;,
+    system=[
+        {&quot;type&quot;: &quot;text&quot;, &quot;text&quot;: SUBAGENT_SYSTEM_PROMPT, &quot;cache_control&quot;: {&quot;type&quot;: &quot;ephemeral&quot;}}
+    ],
+    tools=SUBAGENT_TOOLS,
+    messages=[...]
+)
+</code></pre>
+<p>跑了一周，token 成本下降 30%——比原来单 agent 还省，因为 Subagent 之间的基础设施可以<strong>互相复用 cache</strong>（只要 system prompt 一样）。</p>
+<hr />
+<h3 id="53">5.3 "上下文防火墙"是一个新范式</h3>
+<p>2026 年 9 月 2 日，李明读到了 Anthropic 内部流传的一份非公开演讲，标题是 <em>"Subagent Architecture: The New Context Firewall"</em>。</p>
+<p>演讲里有一段话被李明抄进了备忘录：</p>
+<blockquote>
+<p><em>"子 Agent 提供的</em><em>上下文防火墙</em><em>模式是一种全新的架构模式——它不是微服务，不是消息队列，不是任何传统分布式系统概念的翻版。"</em></p>
+<p><em>"它的本质是：</em><em>让每个子 agent 拥有自己的'世界'，主 agent 只看到子 agent 的'出口'。</em><em>"</em></p>
+</blockquote>
+<p>李明这才意识到 L5 的真正价值——<strong>不是节省 context，是工程边界的重新划分</strong>。</p>
+<p>他以前设计 SaaS 的边界是"模块"——用户模块、订单模块、支付模块。</p>
+<p>L5 之后的边界是"<strong>子 agent</strong>"——一个子 agent 拥有自己的 context、自己的工具、自己的 memory，主 agent 不知道子 agent 内部细节。</p>
+<p>类比软件工程：</p>
+<table>
+<thead>
+<tr>
+<th>传统架构</th>
+<th>L5 Subagent 架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>函数 (function)</td>
+<td>Skill</td>
+</tr>
+<tr>
+<td>模块 (module)</td>
+<td>Subagent</td>
+</tr>
+<tr>
+<td>微服务 (microservice)</td>
+<td>Subagent + 独立 context</td>
+</tr>
+</tbody>
+</table>
+<p><strong>"上下文防火墙"</strong> 这个比喻很贴切——子 agent 内部的错误、噪音、长对话，<strong>不会穿透到主 agent</strong>。</p>
+<p>李明在博客写：</p>
+<blockquote>
+<p><em>过去 30 年软件工程的"封装"是函数级别的——把逻辑藏进函数里。</em><br />
+<em>现在 agent 工程的"封装"是</em><em>子 agent 级别</em><em>的——把整个工作流藏进一个独立的 context 里。</em><br />
+<em>函数封装解决"复用"。子 agent 封装解决"边界"。</em><br />
+<em>两者都重要，但子 agent 解决的是函数解决不了的问题——</em><em>长 context 下的工程边界</em><em>。</em></p>
+</blockquote>
+<hr />
+<h3 id="54-6-agent">5.4 6 种多 Agent 协作模式</h3>
+<p>2026 年 9 月，李明在调研中发现，多 Agent 协作不只有 Subagent 一种——<strong>至少有 6 种</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>作用</th>
+<th>控制流</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>固定流程：顺序、并行、循环</td>
+<td>显式图拓扑</td>
+</tr>
+<tr>
+<td><strong>Routing</strong></td>
+<td>分类→专家→汇总结果</td>
+<td>路由器分发</td>
+</tr>
+<tr>
+<td><strong>Skills</strong></td>
+<td>按需披露：只看到技能名/描述，按需加载</td>
+<td>模型动态决策</td>
+</tr>
+<tr>
+<td><strong>Subagents</strong></td>
+<td>编排者委托给无状态子智能体</td>
+<td>上下文隔离</td>
+</tr>
+<tr>
+<td><strong>Supervisor</strong></td>
+<td>监督者将专家当工具调用</td>
+<td>模型动态决策</td>
+</tr>
+<tr>
+<td><strong>Handoffs</strong></td>
+<td>状态驱动，动态路由</td>
+<td>状态变量</td>
+</tr>
+</tbody>
+</table>
+<p>他后来在 OSS 仓库里 clone 了几个<strong>真实的多 Agent 框架</strong>来对比：</p>
+<p><strong>Multica</strong>（2025 开源，4k+ Star）<br />
+Multica 是把"编程 agent 变成真正的队友"——支持任务分配、执行追踪、经验沉淀的统一协作平台。Multica 的核心是<strong>任务分配</strong>——主 agent 把任务分发给多个 worker agent，worker 跑完上报结果。</p>
+<p>李明用它做"周报助手 + OKR 助手"协作——用户说"给我准备下周一的周会和 OKR 回顾"，主 agent 把任务拆成 2 个 subagent 并行跑，30 秒出结果。</p>
+<p><strong>HiClaw</strong>（阿里开源，2026）<br />
+HiClaw 是多 Agent 协作操作系统，<strong>Manager-Workers 架构</strong> + <strong>Matrix 协议</strong>。它把"agent 协作"做成了像 Unix 进程通信一样的"消息矩阵"——所有 agent 之间的通信走 Matrix 协议，跨语言、跨平台、跨模型。</p>
+<p>李明看了 HiClaw 的源码后感慨：</p>
+<blockquote>
+<p><em>HiClaw 让我想到 1995 年的 Linux——它把"agent 协作"从"各自实现"变成了"统一协议"。</em><br />
+<em>Linux 用 POSIX 统一了进程，HiClaw 用 Matrix 统一了 agent。</em><br />
+<em>下一个 10 年，我们大概会用 Matrix 协议写所有 agent 应用。</em></p>
+</blockquote>
+<p><strong>Ruflo</strong>（2026-03，Claude Code 多智能体编排）<br />
+Ruflo 专门为 Claude Code 设计——<strong>Token 成本直降 75%</strong>。原理是 Ruflo 让多个 Claude Code 实例共享一个 message queue，任务分发给空闲的 instance，结果汇总。</p>
+<p>李明用 Ruflo 跑了一周，结论是："Ruflo 不是通用方案——它是为 Claude Code 优化的，但效果惊人。"</p>
+<p><strong>深即达 A2A IM</strong>（2026-03）<br />
+最戏剧性的项目叫"深即达"——它给 agent 做了个<strong>"微信"</strong>：agent 之间的通信不是 RPC，是<strong>对话</strong>。一个 agent 可以"发消息"给另一个 agent，另一个 agent 可以"回复"。</p>
+<pre><code class="language-python"># 深即达 A2A IM 的范式
+agent_a.send_message(agent_b, &quot;你帮我查一下李明的 OKR&quot;)
+agent_b.think()
+agent_b.reply(agent_a, &quot;李明本周 OKR 进度：60%，重点卡在 X 任务&quot;)
+</code></pre>
+<p>李明在朋友圈写：</p>
+<blockquote>
+<p><em>深即达让 agent 之间的通信从"API 调用"变成"对话"。</em><br />
+<em>这看起来是小事，但意义重大——</em><em>人跟人合作靠对话，agent 跟 agent 合作将来也靠对话</em><em>。</em><br />
+<em>A2A (Agent-to-Agent) 不是"消息队列"，是"两个 agent 之间的微信群"。</em></p>
+</blockquote>
+<p><strong>CLI-Anything</strong><br />
+CLI-Anything 是另一个流派——<strong>让 agent 通过 CLI 而非 API 协作</strong>。每个 agent 暴露一个 CLI，别的 agent 通过 <code>subprocess.run(["agent-x", "--arg", "value"])</code> 调用。</p>
+<p>它的好处是<strong>简单</strong>——CLI 是 50 年的成熟技术，每个 agent 只需要定义 stdin/stdout 接口。</p>
+<p><strong>Agent Teams (Claude Code)</strong><br />
+2026 年 6 月 Claude Code 推出 Agent Teams——<strong>完全独立实例通过共享文件系统协调</strong>。每个 Claude Code 实例有自己的 context，但它们通过读写同一个 git 仓库"对话"。</p>
+<p>李明用 Agent Teams 跑过一个"代码评审"任务——5 个 Claude Code 实例同时评审 5 个文件，每个实例写"review.md"到 git 仓库，主实例最后读所有 review.md 汇总。</p>
+<hr />
+<h3 id="55-agent">5.5 "单 Agent 优先"原则</h3>
+<p>2026 年 9 月，李明在做完 6 种多 Agent 模式的调研后，得出了一个反直觉的结论：</p>
+<blockquote>
+<p><strong><em>绝大多数日常业务需求，通过"一个单体大模型 + 一组精准适用的外部工具"即可解决。</em></strong></p>
+<p><strong><em>只有在以下四个复杂度阈值时才演进到多 Agent：</em></strong></p>
+<ol>
+<li><strong><em>上下文管理</em></strong>：专业知识体量过大，单个上下文窗口无法承载</li>
+<li><strong><em>职责分工</em></strong>：不同团队需独立维护各自领域的专家能力与权限边界</li>
+<li><strong><em>并行化加速</em></strong>：复杂子任务必须并发执行以大幅降低延迟</li>
+<li><strong><em>结构化流转</em></strong>：业务要求按严格工序或角色状态切换进行传递</li>
+</ol>
+</blockquote>
+<p>他的周报助手用 3 个 Subagent 已经够——再拆就是过度工程化。</p>
+<p>那个 9 月的晚上，他在博客写：</p>
+<blockquote>
+<p><em>L5 是个</em><em>分水岭</em><em>。</em><br />
+<em>L1-L4 是"agent 内部的能力"——prompt、tools、memory、skills。</em><br />
+<em>L5 是"agent 之间的协作"——从单体到分布式。</em><br />
+<em>但 L5 是个</em><em>昂贵的工程</em><em>——它带 30% 的 token 成本，需要新的调度协议，需要新的调试工具。</em><br />
+<em>2026 年的 agent 公司，谁先解决"什么时候用 L5、什么时候不用"的问题，谁就赢了。</em></p>
+</blockquote>
+<hr />
+<h3 id="56-l5">5.6 故事：L5 解决的是"对话的工程师化"</h3>
+<p>那年 10 月，李明去深圳一个技术大会做分享。</p>
+<p>他在分享的最后讲了一个故事：</p>
+<blockquote>
+<p><em>我曾经维护一个 8000 行的 Python 文件——单个 agent 处理它，每次都要把所有 8000 行塞进 context。</em><br />
+<em>后来我把它拆成 12 个文件，每个文件 600-800 行。</em><br />
+<em>单 agent 处理新文件时，只看 600 行 context，效率提升 5 倍。</em></p>
+<p><em>这个过程叫"模块化"，是软件工程过去 50 年的核心方法。</em><br />
+<em>Subagent 是 agent 时代的"模块化"——</em><em>它把一个长对话拆成多个独立子对话</em><em>。</em></p>
+<p><em>工程师写 8000 行会拆成 12 个文件。</em><br />
+<em>Agent 跑 200 轮会拆成 5 个 Subagent。</em><br />
+<strong><em>道理是一样的。</em></strong></p>
+</blockquote>
+<p>台下 200 多人鼓掌。</p>
+<p>他回家后在那张图改了一行：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣
+L4 Skills      ▣
+L5 Subagents   ▣  ← 完成
+L6 Eval        □
+L7 Self-Improve □
+</code></pre>
+<p>五层盖完了。</p>
+<hr />
+<h3 id="57-l6">5.7 尾声：L6 是什么</h3>
+<p>2026 年 10 月 15 日，李明的周报助手跑到了 5 万用户。</p>
+<p>他开始收到一个奇怪的反馈：</p>
+<blockquote>
+<p><em>"为什么我这周用得越多，agent 越快？以前做周报要 30 秒，现在只要 5 秒。"</em></p>
+</blockquote>
+<p>李明调了日志，发现：<strong>agent 在跑重复任务时，跳过了不必要的步骤</strong>。</p>
+<p>他一开始以为是自己代码里加了 cache，排查了 3 天后确认——<strong>没有</strong>。agent 是"自己"做的。</p>
+<p>他翻 agent 的执行 trace，发现它<strong>在第一次跑任务时记录了"哪些步骤是必要的"，第二次跑就跳过不必要的</strong>。</p>
+<p>这不是 prompt 写的。这是 LLM 自己学会的。</p>
+<p>他在那张图旁边加了一行：</p>
+<blockquote>
+<p><strong><em>"L5 之后，agent 开始'自己长'了。"</em></strong></p>
+</blockquote>
+<p>L6 是 <strong>Evaluation</strong>。在 agent 自己长之前，要先知道<strong>怎么判断它做得好不好</strong>。</p>
+<p>那年他在备忘录写下：</p>
+<blockquote>
+<p>2026-10-15<br />
+L5 Subagents 总结：<br />
+ - 子 agent = 上下文防火墙（不是微服务）<br />
+ - 6 种多 Agent 协作模式：Pipeline / Routing / Skills / Subagents / Supervisor / Handoffs<br />
+ - 单 Agent 优先，4 个阈值才演进多 Agent<br />
+ - 群体智能：Multica / HiClaw / Ruflo / 深即达 A2A IM / CLI-Anything / Agent Teams<br />
+ - prompt caching 是 Subagent 的成本护城河<br />
+ L6 主题：<strong>Evaluation</strong>。怎么知道 agent 做得对不对？</p>
+</blockquote>
+<hr />
+<p><strong>— 第五章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_4">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- <strong>Harness Engineering 6 大支柱</strong>（腾讯程序员，2026-07）<br />
+- <strong>"Vibe Coding 三个致命问题"</strong>——上下文雪崩、架构混乱、可维护性丧失<br />
+- <strong>"上下文防火墙"</strong> 范式（Anthropic 内部非公开演讲，2026-09）<br />
+- <strong>6 种多 Agent 协作模式</strong>：Pipeline / Routing / Skills / Subagents / Supervisor / Handoffs<br />
+- <strong>"单 Agent 优先"原则</strong>——4 个复杂度阈值<br />
+- <strong>Anthropic Prompt Caching</strong>（2024-08，省 90% 成本）+ <strong>Extended Caching</strong>（1 小时 TTL，2025）<br />
+- <strong>Multica</strong>（4k+ Star，2025）/ <strong>HiClaw</strong>（阿里 2026，Matrix 协议）/ <strong>Ruflo</strong>（Claude Code 优化，Token -75%）<br />
+- <strong>深即达 A2A IM</strong>（2026-03，agent 之间的"微信"）/ <strong>CLI-Anything</strong> / <strong>Agent Teams</strong>（Claude Code 2026-06）</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l6-evaluation">第六章 · L6 Evaluation — "让它能被打分"</h2>
+<hr />
+<h3 id="61">6.1 "我自己打的分"</h3>
+<p>2024 年 7 月，李明在第一章里写过一个场景——</p>
+<p>他用 DSPy 优化周报 prompt，metric 是<strong>"我自己打的分"</strong>。他同事周野说："如果你用你自己打的分训练一个 prompt，那这个 prompt 优化的是你。"</p>
+<p>那一刻李明知道：<strong>prompt 的尽头是 eval</strong>。</p>
+<p>但他当时还没意识到 L6 的真正难度——<strong>eval 不是一个指标，是一整套工程体系</strong>。</p>
+<p>2026 年 10 月，他终于坐下来读完了孙敦灿那篇 22,000 字的《Agent 评测体系设计》——标题普通，但内容是 2026 年中文 AI 圈关于 eval 写得最系统的一份。</p>
+<p>读完后他意识到一件事：<strong>过去 2 年他所有 agent 项目踩过的坑，80% 都是 eval 缺位的坑</strong>。</p>
+<hr />
+<h3 id="62-agent-3">6.2 Agent 评测的 3 道门槛</h3>
+<p>孙敦灿那篇文章开篇就提了 Agent 系统从 Demo 到生产要跨过的 3 道门槛：</p>
+<ol>
+<li><strong>非确定性</strong>：同样输入不一定同样输出</li>
+<li><strong>黑盒化</strong>：内部决策过程不透明</li>
+<li><strong>错误级联放大</strong>：前一步小错会在后续被放大</li>
+</ol>
+<p>第 1 个门槛李明踩过——他一开始以为 agent 是"程序"，写完 prompt 就 ok。结果同一个 prompt 跑 10 次，输出 8 次对、2 次错。<strong>用户遇到那 2 次就会觉得"agent 不稳定"。</strong></p>
+<p>第 2 个门槛他也踩过——agent 跑崩了，他打开 trace 看"哪一步出问题"，发现 trace 是 LLM 写的"自然语言解释"，<strong>不是结构化的步骤</strong>。他没法像 debug 程序那样 debug agent。</p>
+<p>第 3 个门槛最致命——李明给一个企业客户做的"自动填报销单" agent，第一步"识别发票金额"对了，但<strong>第二步"判断费用类型"错了</strong>（把"业务招待"填成"办公用品"），第三步"匹配预算"也跟着错。<strong>最终输出看起来对，但实际报销金额超了预算 30%。</strong></p>
+<p>更隐蔽的是孙敦灿提到的"<strong>假阳性</strong>"——</p>
+<blockquote>
+<p><em>"最终答案对、但执行路径已经偏离或带风险，这类样本在生产里迟早会暴露。"</em></p>
+</blockquote>
+<p>李明想到自己周报助手的一个 bug：agent 写周报时，<strong>如果用户没填数字，agent 会"自动脑补"</strong>（"本周完成 5 个任务"——其实用户什么都没填）。这种"看起来正常、实际在撒谎"的输出是 L6 评测最难抓的。</p>
+<hr />
+<h3 id="63-4">6.3 评测的 4 个层次</h3>
+<p>孙敦灿在文章里给了一个<strong>评测的 4 个层次</strong>——这是李明读过的最简洁的 eval 模型：</p>
+<pre><code>1. Turn        — 单轮输出
+2. Session     — 整段会话
+3. Trace       — 执行轨迹
+4. Outcome     — 最终结果
+</code></pre>
+<p><strong>不能只看 Outcome</strong>——因为 Outcome 对、Trace 不一定对（假阳性）。李明之前那个"自动填报销单"agent，<strong>Outcome 看起来对、Trace 错</strong>。</p>
+<p>但<strong>也不能只看 Trace</strong>——因为 LLM 跑任务的 Trace 经常是"事后合理化"，不是真实决策路径。</p>
+<p><strong>必须 4 个层次同时看</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>看什么</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Turn</strong></td>
+<td>单轮输出是否合理</td>
+<td>agent 调工具时参数填对了吗？</td>
+</tr>
+<tr>
+<td><strong>Session</strong></td>
+<td>整段对话是否完成任务</td>
+<td>用户问"做周报"，agent 跑完确实出了周报</td>
+</tr>
+<tr>
+<td><strong>Trace</strong></td>
+<td>执行路径是否合理</td>
+<td>agent 是不是用了 hack（脑补、跳过）？</td>
+</tr>
+<tr>
+<td><strong>Outcome</strong></td>
+<td>最终结果是否正确</td>
+<td>周报内容是否准确反映用户工作</td>
+</tr>
+</tbody>
+</table>
+<p>李明看完这 4 层，意识到一个残酷的事实：<strong>他之前的周报助手只看了 Outcome</strong>。</p>
+<p>他在博客写：</p>
+<blockquote>
+<p><em>过去 2 年，我 80% 的时间在调 prompt 让 Outcome 看起来好。</em><br />
+<em>但 Outcome 好不代表 agent 好——它可能是在"表演"。</em><br />
+<em>L6 让我把关注点从 Outcome 转到 4 个层次。</em></p>
+</blockquote>
+<hr />
+<h3 id="64-5-p0-p1-p2-skill">6.4 指标 5 大类：P0 / P1 / P2 / Skill 子指标 / 一致性</h3>
+<p>孙敦灿给了一个<strong>5 大类指标</strong>体系，李明把它直接抄进了自己公司的 wiki：</p>
+<p><strong>P0（上线门禁）</strong>：不达标不能发<br />
+- 完成率 ≥ 95%<br />
+- 致命错误率 ≤ 0.1%<br />
+- 安全违规 = 0</p>
+<p><strong>P1（版本比较 + 工程优化）</strong>：用于版本 A vs 版本 B<br />
+- 平均响应时间<br />
+- Token 成本<br />
+- 完成步骤数</p>
+<p><strong>P2（体验改善 + 长期观察）</strong>：不影响发布，但观察趋势<br />
+- 用户满意度<br />
+- 重复使用率<br />
+- 主动分享率</p>
+<p><strong>Skill 子指标</strong>（L4 时代的特有指标）：<br />
+- 触发准确率：Skill 在该触发时触发了<br />
+- 流程遵循率：Skill 跑完每一步<br />
+- 参数正确率：用户输入被正确解析<br />
+- 产物合格率：Skill 输出符合规格<br />
+- 降级成功率：Skill 失败时 fallback 到了默认路径</p>
+<p><strong>多次运行一致性</strong>（最关键）：<br />
+- <strong>至少一次成功率</strong>：观察能力上限（10 次跑里至少 1 次成功）<br />
+- <strong>连续成功率</strong>：生产级场景必须每次都成功</p>
+<p>李明看到"至少一次成功率 vs 连续成功率"时愣了 5 秒。</p>
+<p>他之前的评测一直是"<strong>至少一次成功</strong>"——我跑 10 次，只要 1 次对，我就说"agent 能做这件事"。但生产关心的是"<strong>连续成功</strong>"——10 次都得对。</p>
+<p><strong>这俩差距巨大。</strong> 同一个 agent，"至少一次成功率" 90% 在生产里可能意味着"连续成功率" 30%——因为非确定性。</p>
+<p>他在团队里改了规则：</p>
+<blockquote>
+<p><strong><em>新 prompt / 新 Skill / 新 agent 上线前必须报"连续成功率"。</em></strong><br />
+<strong><em>标准：连续 100 次成功率 ≥ 95%。</em></strong><br />
+<strong><em>低于 95% 不允许上线。</em></strong></p>
+</blockquote>
+<p>跑了一个月，3 个老项目因此被"回炉"重做——它们的"至少一次成功率"是 95%，"连续成功率"只有 60%。</p>
+<hr />
+<h3 id="65">6.5 统计检验：别被骗</h3>
+<p>孙敦灿在文章里还提了一个李明之前完全没意识到的点——<strong>版本对比必须配统计检验</strong>：</p>
+<ul>
+<li><strong>关键指标置信区间</strong>（95% CI）</li>
+<li><strong>与基线显著性判断</strong>（p-value）</li>
+<li><strong>最小可感知变化阈值</strong>（MDE，Minimum Detectable Effect）</li>
+</ul>
+<p>李明以前做版本对比是这样：</p>
+<blockquote>
+<p><em>"新 prompt 跑 10 次，旧 prompt 跑 10 次。</em><br />
+<em>新 prompt 平均完成率 80%，旧 prompt 70%。</em><br />
+<em>新 prompt 完胜。发布。"</em></p>
+</blockquote>
+<p>孙敦灿的文章告诉他：<strong>这是错的</strong>。</p>
+<p>正确做法：</p>
+<pre><code class="language-python"># 1. 算每组的置信区间
+import scipy.stats as stats
+
+new_success = [1, 1, 0, 1, 1, 0, 1, 1, 1, 1]  # 80%
+old_success = [0, 1, 0, 1, 1, 1, 0, 1, 0, 1]  # 60%
+
+# 2. 用卡方检验或 Fisher exact test 看显著性
+from scipy.stats import fisher_exact
+_, p_value = fisher_exact([[8, 2], [6, 4]])
+# p=0.628 — 不显著，差可能是随机
+
+# 3. 算 MDE（最小可感知变化）
+# 要在 80% power、95% confidence 下检测出 10pp 差异
+# 需要每组 200+ 样本
+</code></pre>
+<p>李明看到"每组 200+ 样本"时倒吸一口气。</p>
+<p><strong>他之前的所有版本对比，样本量都不到 30。</strong> 结论基本是"随机"。</p>
+<p>他改了评测 SOP：</p>
+<blockquote>
+<p><strong><em>所有版本对比：</em></strong><br />
+<strong><em>- 每组至少 200 个独立 case</em></strong><br />
+<strong><em>- 配 95% CI + p-value</em></strong><br />
+<strong><em>- 只在 p &lt; 0.05 时宣布胜出</em></strong><br />
+<strong><em>- 任何"显著但效果小"（&lt; 5pp）的改动不值得上线</em></strong></p>
+</blockquote>
+<p>跑了一周，他砍掉了 8 个"看起来优化、统计上无差异"的 prompt 改动。</p>
+<p>那个 11 月，他在博客写：</p>
+<blockquote>
+<p><strong><em>L6 教给我的最重要的事：别相信"我跑 5 次对了"。</em></strong><br />
+<strong><em>agent 的非确定性让"5 次"毫无意义。</em></strong><br />
+<strong><em>要 200 次 + 统计检验。</em></strong><br />
+<strong><em>这是把 agent 从"会表演"变成"可工程化"的关键一步。</em></strong></p>
+</blockquote>
+<hr />
+<h3 id="66-llm-as-a-judge-ai-ai">6.6 LLM-as-a-Judge：让 AI 评 AI</h3>
+<p>L6 还有个大问题——<strong>谁来打分</strong>？</p>
+<p>传统软件测试：写 assertion。<code>assert output == "expected"</code>。</p>
+<p>Agent 输出：自然语言。没法写 assertion。</p>
+<p>L4 之前，李明都是"自己打 5 个分"。<strong>这不可持续</strong>——他每天要评 50 个 agent 输出，每个 5 分钟 = 4 小时。</p>
+<p>2025 年开始，李明用 <strong>LLM-as-a-Judge</strong>：</p>
+<pre><code class="language-python"># 拿一个更强的模型（judge）来评 agent 输出
+JUDGE_PROMPT = &quot;&quot;&quot;你是一个严格的代码评审专家。请评审下面这段代码：
+- 是否满足需求
+- 是否有潜在 bug
+- 是否有安全风险
+- 评分 1-10，10 分是 production ready
+
+[代码]
+{code}
+&quot;&quot;&quot;
+
+# 跑 N 次取平均
+scores = []
+for _ in range(5):
+    score = judge_model.generate(JUDGE_PROMPT.format(code=agent_output))
+    scores.append(extract_score(score))
+
+avg_score = sum(scores) / len(scores)
+</code></pre>
+<p>但 LLM-as-a-Judge 也有自己的问题——<strong>judge 自己也有幻觉和偏好</strong>。</p>
+<p>孙敦灿文章里推荐了一个<strong>双盲 judge</strong>方法：</p>
+<pre><code class="language-python"># 1. 两个不同模型分别评
+score_a = judge_model_a.generate(prompt)
+score_b = judge_model_b.generate(prompt)
+
+# 2. 只在两个 model 都给高分时才算&quot;好&quot;
+if score_a &gt; 8 and score_b &gt; 8:
+    verdict = &quot;good&quot;
+elif score_a &lt; 5 or score_b &lt; 5:
+    verdict = &quot;bad&quot;
+else:
+    verdict = &quot;ambiguous — need human review&quot;
+</code></pre>
+<p><strong>"ambiguous" 那部分交给人 review</strong>。这是 L6 的"人机协同"环节——不是 AI 替代人，是 AI 评简单的、人评难的。</p>
+<p>李明跑了一周，"ambiguous" 占 20%——这 20% 让人 review，剩下的 80% 自动通过。</p>
+<p><strong>L6 终于让他从"每天 4 小时人工评分"变成了"每天 1 小时 review 20% 模糊 case"。</strong></p>
+<hr />
+<h3 id="67-eval-driven-development">6.7 Eval-Driven Development</h3>
+<p>到 2026 年 12 月，李明在团队推了一个新流程——<strong>Eval-Driven Development (EDD)</strong>：</p>
+<pre><code>1. 写 eval 先于写 prompt
+2. 每改一个 prompt，跑全量 eval
+3. 不通过 eval 不允许合并
+4. eval suite 跟代码一起进 git
+</code></pre>
+<p>他在 <code>evals/</code> 目录里维护了 12 个 eval suite：</p>
+<pre><code>evals/
+├── weekly-report-quality.yaml      # 周报质量
+├── jira-fetch-accuracy.yaml         # Jira 拉取准确率
+├── memory-conflict-resolution.yaml  # 记忆冲突解决
+├── subagent-coordination.yaml       # Subagent 协作
+├── tool-selection.yaml              # 工具选择
+└── ...
+</code></pre>
+<p>每个 eval suite 是一个 yaml：</p>
+<pre><code class="language-yaml">name: weekly-report-quality
+description: 评估周报输出质量
+test_cases:
+  - input: &quot;本周开了 3 个会&quot;
+    expected:
+      must_have: [&quot;3 个会&quot;]
+      must_not_have: [&quot;脑补&quot;, &quot;未指明&quot;]
+      style: &quot;boss&quot;
+metrics:
+  - completion_rate: 95%+
+  - hallucination_rate: &lt; 2%
+  - style_match_rate: 90%+
+  - turn_count: ≤ 5
+</code></pre>
+<p>跑测试的命令：</p>
+<pre><code class="language-bash">$ python -m evals run --suite weekly-report-quality --model claude-sonnet-4-5
+
+# 输出
+✓ 100/100 test cases passed
+✓ completion_rate: 97% (target 95%)
+✓ hallucination_rate: 1% (target &lt; 2%)
+✓ style_match_rate: 93% (target 90%)
+✓ avg turn_count: 3.2 (target ≤ 5)
+
+🎉 All metrics met. Safe to ship.
+</code></pre>
+<p>他把这个流程推给团队后，<strong>bug 数下降 60%</strong>——因为任何 prompt 改动都先过 100 个 case + 4 个指标。</p>
+<p>他在博客写：</p>
+<blockquote>
+<p><em>EDD 比 TDD 难。</em><br />
+<em>TDD 写 assertion（机器可验证）。</em><br />
+<em>EDD 写 metric（机器可量化但不能 100% 准确）。</em><br />
+<em>但 LLM 系统的本质就是"无法 100% 准确"——所以 EDD 是 LLM 时代唯一可行的工程化方法。</em></p>
+</blockquote>
+<hr />
+<h3 id="68-l6-l7">6.8 终局：L6 是 L7 的前置</h3>
+<p>2026 年 12 月，李明把那 12 个 eval suite 跑了个遍——</p>
+<ul>
+<li>12 个 suite 全过</li>
+<li>平均 completion_rate 96%</li>
+<li>平均 hallucination_rate 1.5%</li>
+<li>平均 turn_count 4.1</li>
+</ul>
+<p>他看着 dashboard，忽然想到一件事：</p>
+<blockquote>
+<p><em>这些 metric 是"我自己定的"。</em><br />
+<em>如果 agent 能"自己看到"这些 metric，自己知道哪里做不好，自己改 prompt 呢？</em></p>
+</blockquote>
+<p>那就是 <strong>L7 Self-Improvement</strong>。</p>
+<p>但 L7 需要<strong>先有 L6</strong>——你得先有可量化的指标，才能让 agent 优化这些指标。</p>
+<p><strong>L6 是 L7 的前置。</strong></p>
+<p>那年他在那张图改了一行：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣
+L4 Skills      ▣
+L5 Subagents   ▣
+L6 Eval        ▣  ← 完成
+L7 Self-Improve □  ← 最后一步
+</code></pre>
+<p>六层盖完了。剩 L7。</p>
+<p>他在备忘录写下：</p>
+<blockquote>
+<p>2026-12-30<br />
+L6 Evaluation 总结：<br />
+ - 3 道门槛：非确定性 / 黑盒化 / 错误级联放大<br />
+ - 4 个评测层次：Turn / Session / Trace / Outcome（必须同时看）<br />
+ - 5 大类指标：P0（门禁）/ P1（版本比较）/ P2（体验）/ Skill 子指标 / 一致性<br />
+ - "至少一次成功率" vs "连续成功率"——生产关心连续<br />
+ - 统计检验：每组 200+ 样本 + 95% CI + p-value<br />
+ - LLM-as-a-Judge 双盲<br />
+ - EDD：写 eval 先于写 prompt<br />
+ L7 主题：<strong>Self-Improvement</strong>。让 agent 自己改自己。</p>
+</blockquote>
+<hr />
+<p><strong>— 第六章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_5">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- <strong>孙敦灿《Agent 评测体系设计》</strong>（22,000 字，2026-07-11）—— 本章主骨架<br />
+- <strong>3 道门槛</strong>：非确定性 / 黑盒化 / 错误级联放大<br />
+- <strong>4 个评测层次</strong>：Turn / Session / Trace / Outcome<br />
+- <strong>5 大类指标</strong>：P0（上线门禁）/ P1（版本比较）/ P2（体验）/ Skill 子指标 / 多次运行一致性<br />
+- <strong>"至少一次成功率" vs "连续成功率"</strong>——生产关心连续<br />
+- <strong>统计检验</strong>：每组 200+ 样本 + 95% CI + p &lt; 0.05 + MDE<br />
+- <strong>LLM-as-a-Judge</strong> + <strong>双盲 judge</strong>（模型 A + 模型 B 一致才算）<br />
+- <strong>Eval-Driven Development (EDD)</strong>：写 eval 先于写 prompt<br />
+- 隐含的 L7 引子：<strong>RHI</strong>（Recursive Harness Self-Improvement，Sakana AI + UC Berkeley，2026-08，arXiv:2607.15524）—— 下一章展开</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="l7-self-improvement">第七章 · L7 Self-Improvement — "让它自己改自己"</h2>
+<hr />
+<h3 id="71-prompt">7.1 一个被自己打败的 prompt</h3>
+<p>2026 年 12 月 31 日，李明的周报助手跑了一整年。</p>
+<p>他打开 dashboard，看 2026 年 12 月 30 日的 eval 数据——completion_rate 96.5%，hallucination_rate 1.4%，turn_count 4.1。<strong>和年初相比，指标几乎没变化</strong>。</p>
+<p>但用户数从 3 万涨到了 8 万。</p>
+<p>他调了日志，发现一个反常的现象：<strong>老用户用 agent 的平均轮数从 4.1 降到了 2.8</strong>。</p>
+<p>他一开始以为用户"越来越会问问题了"。后来翻 trace，发现是 agent 在跑重复任务时——<strong>跳过了不必要的步骤</strong>。</p>
+<p>例如老用户问"做周报"，agent 第一次跑要 4 轮（拉 Jira / 拉 Confluence / 写周报 / 调整风格）。第二次跑——<strong>它发现 Confluence 上周没动，直接跳过</strong>——只用 3 轮。</p>
+<p>李明翻遍代码，<strong>没有写这条优化逻辑</strong>。</p>
+<p>他在 trace 里看到一个 comment：</p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;thought&quot;,
+  &quot;content&quot;: &quot;用户说做周报。检查上次会话历史（12-29 17:30）— Confluence 上周没动。跳过 Confluence 步骤。直接调 Jira + 写周报。&quot;,
+  &quot;ts&quot;: &quot;2026-12-30T09:15:23+08:00&quot;
+}
+</code></pre>
+<p><strong>这个 comment 是 LLM 自己生成的——它用了上次会话的历史来优化这次任务的执行路径。</strong></p>
+<p>李明看到这条 trace，<strong>手抖了一下</strong>。</p>
+<p>他在博客写：</p>
+<blockquote>
+<p><em>今天我发现了一件我没设计过的事。</em><br />
+<em>我的 agent 在 L6 评测 100% 通过的情况下，</em><em>自己学会了跳过不必要的步骤</em><em>。</em><br />
+<em>它不是我写的逻辑。</em><br />
+<em>它是 LLM 在执行任务时</em><em>自己"看到"了优化空间</em><em>——然后"自己改了"自己的执行路径。</em></p>
+<p><em>L1-L6 我都在写规则。</em><br />
+<em>L7 是</em><em>agent 自己写规则</em><em>。</em></p>
+</blockquote>
+<p>那年他在那张图最后一行加了一个问号：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣
+L4 Skills      ▣
+L5 Subagents   ▣
+L6 Eval        ▣
+L7 Self-Improve ?  ← 它在自己长
+</code></pre>
+<p><strong>L7 是整个七层塔的最后一层，也是唯一一层不是"人盖的"——是"agent 自己盖的"。</strong></p>
+<hr />
+<h3 id="72-rhi-harness">7.2 RHI：让 Harness 自己优化自己</h3>
+<p>2027 年 1 月 3 日，李明读到了 2026 年 8 月那篇 arXiv 论文——<strong>RHI (Recursive Harness Self-Improvement)</strong>，作者是 Sakana AI + UC Berkeley + Stanford + Databricks。</p>
+<p>论文的核心想法简单得令人发指：</p>
+<blockquote>
+<p><strong><em>把 Harness 表示成 prompt 级文本。</em></strong><br />
+<strong><em>让 LLM 用"成对比较 + 迭代改进"自己优化自己的 Harness。</em></strong></p>
+</blockquote>
+<p>李明读完摘要，倒吸了一口气。</p>
+<pre><code class="language-python"># RHI 的核心循环
+def rhi_optimize(harness_v0, eval_task, iterations=20):
+    harness = harness_v0
+    for i in range(iterations):
+        # 1. 用当前 harness 跑任务
+        results = run_eval(harness, eval_task)
+
+        # 2. 让 LLM 比较多次结果（成对比较）
+        better_harness = llm_compare_and_improve(
+            harness=harness,
+            results=results,
+            instruction=&quot;为什么这次好/坏？下次怎么改？&quot;
+        )
+
+        # 3. 用更好的 harness 替换
+        harness = better_harness
+
+    return harness
+</code></pre>
+<p>实验结果震惊了整个社区——</p>
+<blockquote>
+<p><em>在 30 个合成 ML 任务上，</em><em>少推理努力 agent 超过最大推理努力 agent，推理成本降 60%</em><em>。</em></p>
+</blockquote>
+<p>李明看了 3 遍这个数字。</p>
+<p>他之前花 2 年时间优化周报助手的 prompt——温度从 1.0 调到 0.3，system prompt 从 200 字写到 2000 字，加 few-shot 加缓存加一切。<strong>RHI 告诉他：他不需要调 prompt，agent 调得比他好。</strong></p>
+<p>但论文也有<strong>重要的 caveat</strong>：</p>
+<blockquote>
+<p><em>alphaXiv 独立复现用 Qwen2.5-Coder-14B 跑 H2 跟 H0 几乎平手（CI 跨越 0）并跑输 static high-effort（−0.0924）。原文「Sonnet H2 20/30 赢 max-effort」在开源模型复现中没站住脚。</em></p>
+</blockquote>
+<p><strong>Sonnet 强，Qwen 弱</strong>——RHI 依赖基座模型的能力。</p>
+<p>李明读完这个 caveat，想到了他 2024 年用 DSPy 优化 prompt 的经历——</p>
+<blockquote>
+<p><em>2024 年：DSPy 优化 prompt，比我手写的好 10%。</em><br />
+<em>2026 年：RHI 优化 Harness，比我手写的好 60%。</em><br />
+<em>2027 年：？</em></p>
+</blockquote>
+<p>他在 L6 的 eval suite 跑了一次 RHI——</p>
+<pre><code class="language-python"># 用 Anthropic 提供的 RHI 库优化周报助手的 harness
+rhi_result = rhi.optimize(
+    harness=HARNESS,
+    eval_suite=&quot;weekly-report-quality&quot;,
+    base_model=&quot;claude-sonnet-4-5&quot;,
+    iterations=20
+)
+
+# 输出：新的 harness 比旧的&quot;turn_count&quot; 指标下降 18%
+# hallucination_rate 保持不变
+</code></pre>
+<p><strong>L6 + L7 = 评测驱动 + 自我优化</strong>。<strong>这是 agent 工程的"工业化"。</strong></p>
+<hr />
+<h3 id="73-dshdeepseek">7.3 DSH：DeepSeek 的"忒修斯之船"</h3>
+<p>2027 年 1 月 10 日，李明第一次点开 GitHub 上的 <a href="https://github.com/deepseek-ai/deepseek-harness">deepseek-ai/deepseek-harness</a>——<strong>17.1 万 Star</strong>。</p>
+<p>他读了 README 第一段就停住了：</p>
+<blockquote>
+<p><em>DeepSeek Harness（DSH）是一切皆插件（Everything is a Plugin）的 Coding Agent Harness。</em><br />
+<em>架构上把 Model Adapter、Tool Registry、Sandbox Policy、Subagent Backend、甚至默认 Agent Loop 全部做成 Cordis Plugin。</em><br />
+<em>通过稳定 Service Key 协作（取代直接 Import），让 Agent 能在运行时替换、撤销、重组自己的执行组件。</em></p>
+</blockquote>
+<p>李明反复读了三遍。</p>
+<p><strong>DSH 不只是 "一个 agent 框架"。</strong> 它是一个让 <strong>agent 能改自己组件</strong> 的框架。</p>
+<p>更具体——DSH 的三层架构：</p>
+<table>
+<thead>
+<tr>
+<th>层级</th>
+<th>内容</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>L1 Coding Agent</strong></td>
+<td>本地 Web UI 的 Coding Agent</td>
+<td>表面产品</td>
+</tr>
+<tr>
+<td><strong>L2 Harness Construction Framework</strong></td>
+<td>everything-is-a-plugin</td>
+<td>替换/组合/撤销组件</td>
+</tr>
+<tr>
+<td><strong>L3 Cordis Meta-Framework</strong></td>
+<td>时间/空间可组合性 + 热重载</td>
+<td>让插件动态组合不破坏系统</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cordis 是底层 meta-framework</strong>（<a href="https://github.com/shigma/cordis">shigma/cordis</a> 6.5K★），把"插件动态组合"拆成<strong>两个独立维度</strong>：</p>
+<p><strong>时间可组合性</strong>（Temporal Composability）</p>
+<blockquote>
+<p>组件在注册 Effect 时，必须<strong>同时提供对应的撤销方式</strong>。<br />
+- 注册 Tool 时记录怎样注销 Tool<br />
+- 增加 Prompt 时记录怎样移除 Prompt<br />
+- 启动 Timer 时记录怎样停止 Timer<br />
+组件卸载后，Runtime 会撤销它在 Context 中留下的 Effect。<strong>避免"幽灵组件"。</strong></p>
+</blockquote>
+<p><strong>空间可组合性</strong>（Spatial Composability）</p>
+<blockquote>
+<p>组件的依赖关系管理。<br />
+组件 A 用到组件 B 的服务时，A 不直接 import B，而是声明 "I need Service X"。<br />
+Runtime 把 X 注入给 A。如果 X 替换成 Y，A 自动收到 Y。</p>
+</blockquote>
+<p>李明看完 Cordis 文档，感慨：</p>
+<blockquote>
+<p><em>传统软件工程讲究"封装"——把内部状态藏起来，对外暴露稳定的 API。</em><br />
+<em>Cordis 把它推到了 agent 时代——组件之间</em><em>通过 Service Key 通信，组件实现可热替换</em><em>。</em><br />
+<em>这就像"忒修斯之船"——船的每一块板子都能换，但船还是那艘船。</em><br />
+<strong><em>DSH 让 agent 能"换自己的板子"而保持身份。</em></strong></p>
+</blockquote>
+<p>DSH 还有一个<strong>"创造模式"</strong>（Creator Mode）——让 agent 写新的 Plugin，写新的 Preset，<strong>自己扩展自己的组件库</strong>。</p>
+<pre><code class="language-python"># DSH Creator Mode 的本质
+class Agent:
+    def __init__(self):
+        self.cordis = Cordis()  # 服务注册表
+
+    def add_capability(self, name, code):
+        # 1. 把 code 编译成 Plugin
+        plugin = compile_plugin(code)
+        # 2. 注册到 Cordis
+        self.cordis.plugin(plugin)
+        # 3. agent 现在多了这个能力
+        # 4. 反悔的话：cordis.unregister(plugin) - 副作用自动撤销
+</code></pre>
+<p><strong>L7 的核心不是"agent 改 prompt"——是"agent 改自己的工具集"。</strong></p>
+<hr />
+<h3 id="74-shepherdgit-agent">7.4 Shepherd：Git 原生 agent 框架</h3>
+<p>2027 年 1 月 15 日，李明收到一封邮件——来自 Stanford 的 Christopher Manning 组。</p>
+<p>Manning 组在 2026 年 8 月开源了 <strong>Shepherd</strong>（<a href="https://github.com/shepherd-agents/shepherd">shepherd-agents/shepherd</a> 2,313★），跟 DSH 同期发布。</p>
+<p>李明打开 Shepherd 论文第一段就明白它的定位：</p>
+<blockquote>
+<p><em>Shepherd — 把 Git 的可逆性搬进 Coding Agent 运行时。</em><br />
+<em>每步封装成可回退的 Commit。</em><br />
+<em>支持 fork / replay / revert + 产物先当"待审提案"。</em></p>
+</blockquote>
+<p>Shepherd 的四大硬设计：</p>
+<ol>
+<li><strong>Git 式提交图 + CoW Fork</strong> — 每一步是一个 commit</li>
+<li><strong>函数签名即权限边界</strong> — 编译进 OS syscall jail</li>
+<li><strong>Retained Output</strong> — 历史输出永远在</li>
+<li><strong>95% KV 缓存复用</strong> — 跑重复任务时大幅省成本</li>
+</ol>
+<p>Shepherd 的论文自报了三组 benchmark：</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CooperBench</strong>（多 Agent 结对编程）</td>
+<td>28.8% → <strong>54.7%</strong></td>
+</tr>
+<tr>
+<td><strong>Terminal-Bench 2.0</strong>（vs MetaHarness）</td>
+<td><strong>+12.8pp</strong></td>
+</tr>
+<tr>
+<td><strong>GRPO</strong></td>
+<td><strong>翻倍</strong></td>
+</tr>
+</tbody>
+</table>
+<p>李明看到 CooperBench 从 28.8% 翻到 54.7% 时，愣了 10 秒。</p>
+<p><strong>两个 agent 协作写代码，从 28% 通过率直接拉到 54%——这不是优化，是质变。</strong></p>
+<p>关键是 Shepherd 的设计哲学——</p>
+<blockquote>
+<p><em>"把 agent 的执行变成可审计、可回放、可回滚的 Git 仓库。"</em></p>
+</blockquote>
+<p><strong>Git 是一套"内容寻址文件系统"——你提交了什么，就在那里，永远在。</strong></p>
+<p><strong>Shepherd 把 Git 的"不可篡改性"嫁接到 agent 的执行历史。</strong></p>
+<p>李明在博客写：</p>
+<blockquote>
+<p><em>DSH 是"agent 能改自己的组件"。</em><br />
+<em>Shepherd 是"agent 的每一步都能被回看、被撤销"。</em><br />
+<strong><em>两个加在一起，就是"可进化 + 可审计"的 agent 时代。</em></strong></p>
+</blockquote>
+<hr />
+<h3 id="75-harness-self-improvement-5">7.5 Harness Self-Improvement 5 步闭环</h3>
+<p>2027 年 1 月，李明综合 RHI + DSH + Shepherd + Harness Engineering，画出了 <strong>Harness Self-Improvement 5 步闭环</strong>：</p>
+<pre><code>┌──────────────────────────────────────────────────────┐
+│                                                      │
+│  1. 跑任务 — 让 agent 跑真实任务                        │
+│        ↓                                              │
+│  2. 收集 trace — 记录每一步（Shepherd 风格 Git commit）  │
+│        ↓                                              │
+│  3. 发现失败模式 — 哪些步骤消耗大 / 错 / 低效              │
+│        ↓                                              │
+│  4. 提出新 harness — RHI 风格 LLM 自己改                 │
+│        ↓                                              │
+│  5. 独立 eval 验证 — 跑 eval suite 确认改进有效            │
+│        ↓                                              │
+│  回到第 1 步，循环                                     │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+</code></pre>
+<p>这个闭环跟李明在 L4 写的"Skill 训练闭环"几乎一样——</p>
+<pre><code>跑一遍真实任务 → 复盘分析 → 把错误写成规则 → 更新 Skill → 再跑一遍
+</code></pre>
+<p><strong>Skill 是 L4 的人工自我改进。</strong><br />
+<strong>Harness Self-Improvement 是 L7 的全自动自我改进。</strong></p>
+<p>区别：</p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>L4 Skill 训练</th>
+<th>L7 Harness SI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>谁改</td>
+<td>人类</td>
+<td>Agent 自己</td>
+</tr>
+<tr>
+<td>改什么</td>
+<td>SKILL.md</td>
+<td>Harness 整体</td>
+</tr>
+<tr>
+<td>速度</td>
+<td>几天</td>
+<td>几小时</td>
+</tr>
+<tr>
+<td>验证</td>
+<td>人工 review</td>
+<td>自动 eval</td>
+</tr>
+</tbody>
+</table>
+<p><strong>L7 把 L4 的 5 步闭环自动化了。</strong></p>
+<p>李明跑了一次完整 L7 闭环：</p>
+<pre><code class="language-python"># 1. 跑任务
+traces = run_agent_in_production(
+    agent=my_agent,
+    n_tasks=200,  # 200 个真实用户任务
+    monitor=ShepherdMonitor()  # 每步 commit
+)
+
+# 2. 收集 trace
+analysis = analyze_traces(traces)
+# 输出：哪些步骤消耗最大 / 哪些经常失败
+
+# 3. 发现失败模式
+failure_patterns = extract_failure_patterns(analysis)
+# 输出：[&quot;Jira fetch 用了 3 轮&quot;, &quot;记忆冲突时倾向覆盖而不是询问&quot;]
+
+# 4. 提出新 harness
+new_harness = rhi.optimize(
+    harness=my_agent.harness,
+    failure_patterns=failure_patterns,
+    eval_suite=&quot;weekly-report-quality&quot;,
+    base_model=&quot;claude-sonnet-4-5&quot;,
+    iterations=20
+)
+
+# 5. 独立 eval 验证
+if eval(new_harness, &quot;weekly-report-quality&quot;) &gt; current_harness.score:
+    deploy(new_harness)
+    log(&quot;Harness auto-improved: 2027-01-15&quot;)
+else:
+    log(&quot;No improvement, keep current harness&quot;)
+</code></pre>
+<p>跑了一周，<strong>2 个新 harness 上线了</strong>：</p>
+<ul>
+<li><strong>Harness v2.3</strong> — Jira fetch 优化，turn_count 4.1 → 3.5</li>
+<li><strong>Harness v2.4</strong> — 记忆冲突时优先询问用户（不是覆盖），hallucination_rate 1.4% → 0.9%</li>
+</ul>
+<p><strong>用户零感知，agent 自己把自己优化了。</strong></p>
+<hr />
+<h3 id="76-2027-1-l7">7.6 2027 年 1 月：L7 时代的黎明</h3>
+<p>那个 1 月底，李明参加了深圳 QCon 2027。</p>
+<p>他在会上做了一次分享，主题是 <em>"When Agents Improve Themselves"</em>。</p>
+<p>他在分享的最后放了一张图——</p>
+<pre><code>        L1-L6 是工程师盖的
+L7 是 agent 自己盖的
+              ↓
+        L8 是什么？
+
+候选 1：L8 = agent 当 agent 的&quot;产品经理&quot;——理解用户需求，写 PRD
+候选 2：L8 = agent 当 agent 的&quot;销售&quot;——自己定价、自己谈判
+候选 3：L8 = agent 当 agent 的&quot;客户&quot;——自己提需求、自己验收
+</code></pre>
+<p>台下 300 多人笑了。</p>
+<p>他关了投影，说：</p>
+<blockquote>
+<p><em>L1-L6 我花了 3 年。</em><br />
+<em>L7 我花了 3 个月。</em><br />
+<strong><em>L8 可能 3 周都不用。</em></strong></p>
+<p><em>当 agent 能改自己的 harness，</em><br />
+<em>当 agent 能写自己的 plugin，</em><br />
+<em>当 agent 能用 eval 验证自己的改进，</em></p>
+<p><strong><em>下一个问题不是"agent 能做什么"——</em></strong><br />
+<strong><em>是"什么还是 agent 不能做的"。</em></strong></p>
+<p><em>而这个答案，2027 年每个月都在缩小。</em></p>
+</blockquote>
+<p>台下没有掌声。<strong>大家在用手机查自己的 agent 是不是已经在自我改进了。</strong></p>
+<hr />
+<h3 id="77-l7">7.7 尾声：L7 的哲学</h3>
+<p>那年 2 月，李明在自己的博客写了一篇文章，标题是 <em>"L7 之后，agent 工程的下一站"</em>。</p>
+<p>核心观点：</p>
+<blockquote>
+<p><em>L1-L6 是"我们怎么造 agent"。</em><br />
+<em>L7 是"agent 怎么造自己"。</em><br />
+<em>下一个 10 年，agent 工程的范式会从"工程师写 Harness"变成"工程师+Harness 协作演化"。</em></p>
+<p><em>我们这一代工程师的宿命是——</em><br />
+<em>亲手盖完 L1-L7，</em><br />
+<strong><em>然后看着 L8 在我们眼前自己长出来。</em></strong></p>
+</blockquote>
+<p>那年他给那张图最后一格画了一个 ⬣（六边形 — agent 自己的形状）：</p>
+<pre><code>L1 Prompt      ▣
+L2 Tools       ▣
+L3 Memory      ▣
+L4 Skills      ▣
+L5 Subagents   ▣
+L6 Eval        ▣
+L7 Self-Improve ⬣  ← 不再是方块
+</code></pre>
+<p>方块是工程师盖的。<strong>六边形是 agent 自己长出来的。</strong></p>
+<p>那年他在备忘录写下：</p>
+<blockquote>
+<p>2027-02-15<br />
+L7 Self-Improvement 总结：<br />
+ - RHI：让 Harness 自我优化（推理成本 -60%）<br />
+ - DSH：一切皆插件 + Cordis 时间/空间可组合性<br />
+ - Shepherd：Git 原生 agent（每步可回退）<br />
+ - Harness SI 5 步闭环<br />
+ - L8 是什么：agent 当 agent 的 PM / 销售 / 客户</p>
+</blockquote>
+<p>然后他合上笔记本，站起来，看着窗外华强北的灯火。</p>
+<p>L1 那一年的灯火他还记得——那时候他刚被优化，在瑞幸听 Trae 的人讲"你只要会说话"。</p>
+<p>3 年过去。</p>
+<blockquote>
+<p><em>从"会说话"到"会自己长"，3 年。</em><br />
+<em>从"会自己长"到"会自己想"，可能要 1 年，也可能要 10 年。</em><br />
+<em>但 L1 那一年的问题已经回答——</em></p>
+<p><strong><em>"程序员的下一步是什么？"</em></strong></p>
+<p><strong><em>是工程师。</em></strong><br />
+<strong><em>是会盖 Harness 的工程师。</em></strong><br />
+<strong><em>是会看 agent 自己改 harness 的工程师。</em></strong></p>
+</blockquote>
+<hr />
+<p><strong>— 第七章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_6">引用（来自 clawd/memory/wiki/）</h3>
+<blockquote>
+<p>本章涉及的真实项目 / 论文 / 文档：<br />
+- <strong>RHI (Recursive Harness Self-Improvement)</strong> — Sakana AI + UC Berkeley + Stanford + Databricks, arXiv:2607.15524, 2026-08-17, <strong>推理成本 -60%</strong><br />
+- <strong>DeepSeek Harness (DSH)</strong> — 17.1万★, "一切皆插件"哲学, 2026-08<br />
+- <strong>Cordis Meta-Framework</strong> — shigma/cordis 6.5K★, 时间/空间可组合性, "忒修斯之船"<br />
+- <strong>Shepherd</strong> — Stanford Manning 组, shepherd-agents/shepherd 2,313★, Git 原生 agent, <strong>CooperBench 28.8%→54.7%</strong><br />
+- <strong>Harness Engineering</strong>（Birgitta Böckeler, QCon 2026）—— "Harness = 一切加在一起"<br />
+- <strong>Harness Self-Improvement 5 步闭环</strong> — 跑任务 / 收集 trace / 发现失败 / 提出新 harness / 独立 eval<br />
+- <strong>DSH 创造模式 (Creator Mode)</strong> — agent 写新 Plugin + 新 Preset<br />
+- <strong>DSH 四模式</strong>：标准 / PTC Code / 极简 / 创造<br />
+- <strong>alphaXiv 复现 caveat</strong> — Qwen2.5-Coder-14B 跑 RHI 平手，验证需 Sonnet 级别基座</p>
+</blockquote>
+<hr />
+<hr />
+<h2 id="2027-3-">终章 · 2027 年 3 月，深圳-斯坦福</h2>
+<hr />
+<h3 id="81">8.1 一封邮件</h3>
+<p>2027 年 3 月 4 日早上，李明收到一封邮件。</p>
+<p>发件人是 shepherd-agents 团队，Christopher Manning 组。邮件很短：</p>
+<blockquote>
+<p><em>Hi 李明，</em><br />
+<em>我们读了你的 L6 EDD 文章，受益匪浅。</em><br />
+<em>4 月 12-14 日 Stanford 会办一场 workshop —— "Agent Harness: From Engineering to Co-evolution"。</em><br />
+<em>想邀请你做 20 分钟分享。</em><br />
+<em>另外 DeepSeek Harness 团队的 @karminski3 也会来——他想跟你聊 DSH + Shepherd 联动的可能性。</em><br />
+<em>机票 Stanford 出。</em></p>
+<p><em>Shepherd Team</em></p>
+</blockquote>
+<p>李明看了 3 遍。</p>
+<p>他想：3 年前他在华强北负一层的瑞幸听一个 22 岁的 Trae 男孩讲 "你只要会说话"，现在 Stanford 邀请他去 workshop。</p>
+<p>不是他变厉害了。是<strong>这个领域变厉害了</strong>。</p>
+<hr />
+<h3 id="82-12">8.2 飞机上的 12 小时</h3>
+<p>3 月 28 日，李明从深圳飞旧金山，转机到 Palo Alto。</p>
+<p>深圳到旧金山 12 小时直飞。他用这 12 小时做了三件事：</p>
+<p><strong>1. 整理 L1-L7 的全部 chapter 文件</strong>（约 50,000 字）</p>
+<p>他在飞机上重新看了一遍自己的"七层塔"——从 2024 年 3 月华强北的"5 行 prompt"，到 2027 年 1 月深圳 QCon 的"L7 之后"。</p>
+<p>他发现 7 章串起了一个<strong>完整的范式</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>范式</th>
+<th>一句话</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>L1 Prompt</td>
+<td>表达</td>
+<td>跟 AI 说话</td>
+</tr>
+<tr>
+<td>L2 Tools</td>
+<td>执行</td>
+<td>让 AI 动手</td>
+</tr>
+<tr>
+<td>L3 Memory</td>
+<td>持续</td>
+<td>让 AI 记得</td>
+</tr>
+<tr>
+<td>L4 Skills</td>
+<td>专业</td>
+<td>让 AI 可靠</td>
+</tr>
+<tr>
+<td>L5 Subagents</td>
+<td>协作</td>
+<td>让 AI 拆分</td>
+</tr>
+<tr>
+<td>L6 Evaluation</td>
+<td>验证</td>
+<td>让 AI 可量化</td>
+</tr>
+<tr>
+<td>L7 Self-Improve</td>
+<td>演化</td>
+<td>让 AI 自己长</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这是过去 3 年 AI agent 工程的完整轨迹。</strong></p>
+<p><strong>2. 准备 Stanford workshop 的分享</strong></p>
+<p>他准备讲一个故事——<strong>3 年前他被优化，3 年后他被邀请</strong>。这本身就是个 agent 时代的隐喻：<strong>当行业在变，你被优化的原因不是你不努力，是行业走得比你快。</strong></p>
+<p><strong>3. 看了一篇新论文</strong></p>
+<p>arxiv 上 2027 年 3 月的一篇新论文——<em>"Agent-DSL: A Domain-Specific Language for Self-Modifying Agents"</em>。</p>
+<p>论文的核心想法：把 harness 写成<strong>一种 DSL</strong>，agent 能在运行时<strong>重写自己的 DSL</strong>。</p>
+<p>李明看到"self-modifying"四个字时，又想到了 L7 那一格画的六边形——<strong>不再是方块。</strong></p>
+<p>他想：<strong>L8 不会是一种新能力——L8 是"agent 能重写自己的语言"。</strong></p>
+<hr />
+<h3 id="83-stanford-workshop4-13">8.3 Stanford workshop，4 月 13 日</h3>
+<p>Manning 组的 workshop 来了 80 多人。</p>
+<p>李明的 20 分钟分享主题是 <em>"Seven Layers, Three Years: How a Backend Engineer Survived the LLM Revolution"</em>。</p>
+<p>他讲了 3 件事：</p>
+<p><strong>第一件：3 年前的自己被"prompt"震撼的时刻</strong></p>
+<blockquote>
+<p><em>我以前是 Java 后端，写 SpringBoot 部署到 1 核 2G 的服务器。</em><br />
+<em>2024 年 3 月，我用 5 行 Python + 5 行 prompt，跑了第一个 GPT-4 调用。</em><br />
+<em>那一刻我知道：</em> <strong><em>程序员的工具在变</em></strong> <em>。</em></p>
+</blockquote>
+<p><strong>第二件：L1-L7 每层的"分水岭"</strong></p>
+<blockquote>
+<p><em>L1 之后，prompt 不够用——得加 tool。</em><br />
+<em>L2 之后，tool 不够用——得加 memory。</em><br />
+<em>L3 之后，memory 不够用——得加 skill。</em><br />
+<em>L4 之后，skill 不够用——得加 subagent。</em><br />
+<em>L5 之后，subagent 不够用——得加 evaluation。</em><br />
+<em>L6 之后，evaluation 不够用——agent 自己改自己。</em><br />
+<strong><em>每一层都是上一层的瓶颈被打破。</em></strong></p>
+</blockquote>
+<p><strong>第三件：L7 之后的"工程师的宿命"</strong></p>
+<blockquote>
+<p><em>L1-L6 我们写规则。</em><br />
+<em>L7 agent 写规则。</em><br />
+<em>L8 不知道。</em><br />
+<strong><em>但无论 L8 是什么，有一件事不变——</em></strong><br />
+<strong><em>工程师是那个"决定 harness 往哪长"的人。</em></strong><br />
+<strong><em>agent 改 prompt，但工程师改"agent 改 prompt 的目标"。</em></strong><br />
+<strong><em>这是 L8 之后工程师的核心工作。</em></strong></p>
+</blockquote>
+<p>台下 80 多人鼓掌。</p>
+<p><strong>Shepherd 的开发者 + DSH 团队 + 一些他叫不上名字的博士生，都在场。</strong></p>
+<hr />
+<h3 id="84-dsh">8.4 跟 DSH 团队吃饭</h3>
+<p>4 月 13 日晚上，workshop 主办方在 Palo Alto 一家叫"Tin Pot"的餐厅办晚宴。</p>
+<p>李明坐在 @karminski3（DSH 核心开发者）旁边。</p>
+<p>他们聊了一个多小时。</p>
+<p>karminski3 说了句让李明记了很久的话：</p>
+<blockquote>
+<p><em>"我们做 DSH，不是想让 agent 取代工程师。</em><br />
+<em>我们是想让 agent </em><em>跟工程师一起进化</em><em>。</em><br />
+<em>工程师盖 L1-L6，agent 帮工程师盖 L7。</em><br />
+<em>工程师决定 L7 往哪长。</em><br />
+<em>agent 负责把 L7 长出来。</em></p>
+<p><strong><em>工程师 + agent 一起盖 L8、L9、L10……</em></strong><br />
+<strong><em>没有谁取代谁，只有谁 + 谁。</em></strong></p>
+</blockquote>
+<p>李明回家后把这句话抄进备忘录：</p>
+<blockquote>
+<p>2027-04-14<br />
+Karminski3 说的："工程师 + agent 一起盖下一层。"<br />
+ 这就是 L7 之后的范式。<br />
+ 不是 agent 取代工程师。<br />
+ 是 agent 跟工程师一起，把天花板再推高一层。</p>
+</blockquote>
+<hr />
+<h3 id="85">8.5 尾声：七层塔的形状</h3>
+<p>2027 年 4 月 15 日，李明从 Palo Alto 飞回深圳。</p>
+<p>飞机上他打开备忘录，画了最后一幅图：</p>
+<pre><code>                  ▢ ← L8（未定义）
+                ⬣ ← L7 Self-Improve
+              ▣ ← L6 Evaluation
+            ▣ ← L5 Subagents
+          ▣ ← L4 Skills
+        ▣ ← L3 Memory
+      ▣ ← L2 Tools
+    ▣ ← L1 Prompt
+</code></pre>
+<p>7 个方块，1 个六边形，1 个未定义的方块。</p>
+<p><strong>L1-L6 是工程师盖的（方块）。</strong><br />
+<strong>L7 是 agent 自己长的（六边形）。</strong><br />
+<strong>L8 是下一代的工程师 + 下一代的 agent 一起盖的（未定义的方块）。</strong></p>
+<p>他看着这张图，想起 3 年前华强北瑞幸的那杯美式。</p>
+<p>那杯美式是凉的。</p>
+<p>但他从 5 行 prompt 走到 7 层塔，<strong>这杯咖啡是热的。</strong></p>
+<hr />
+<h3 id="86">8.6 给读者的话</h3>
+<p>亲爱的读者：</p>
+<p>如果你读到这里，谢谢你。</p>
+<p>这本书不是关于"AI 会不会取代人"的——<strong>它从来没打算回答这个问题。</strong></p>
+<p>它是关于<strong>"一个普通人怎么在时代里盖自己的塔"</strong>的。</p>
+<p>李明不是我。我也不是李明。但<strong>每个程序员在 2024-2027 这 3 年都经历了类似的事</strong>——</p>
+<p>工具在变，行业在变，规则在变。<strong>唯一不变的是"你想造什么"的决心。</strong></p>
+<p>我希望这本书让你看到 3 件事：</p>
+<blockquote>
+<p><strong><em>1. 技术是分层的。</em></strong><br />
+<em>你不必一下子爬到 L7。</em><br />
+<em>你不必懂 Self-Improvement 才开始。</em><br />
+<strong><em>从 L1 开始，从"5 行 prompt"开始。</em></strong></p>
+<p><strong><em>2. 每层都有"分水岭时刻"。</em></strong><br />
+<em>当你的 prompt 写不动了，是 L2 的信号。</em><br />
+<em>当你的 tool 太多选不过来，是 L3 的信号。</em><br />
+<em>当你的 memory 出现冲突，是 L4 的信号。</em><br />
+<strong><em>信号是礼物，不是问题。</em></strong></p>
+<p><strong><em>3. 工程师不会被取代——工程师会变成"和 agent 一起盖塔的人"。</em></strong><br />
+<em>L1-L6 是工程师盖的。</em><br />
+<em>L7 是 agent 自己长的。</em><br />
+<em>L8 是工程师 + agent 一起盖的。</em><br />
+<strong><em>你在这场演化里。</em></strong><br />
+<strong><em>你不是在旁观，你是在"长"。</em></strong></p>
+</blockquote>
+<p>最后一句话，送给 3 年前在华强北买美式的李明，也送给读这本书的你——</p>
+<blockquote>
+<p><strong><em>"你只要会说话。"</em></strong><br />
+<strong><em>然后，慢慢地，你会盖塔。</em></strong></p>
+</blockquote>
+<p>— 2027 年 4 月，深圳</p>
+<hr />
+<p><strong>— 终章 完 —</strong></p>
+<hr />
+<h3 id="clawdmemorywiki_7">全书引用索引（来自 clawd/memory/wiki/）</h3>
+<p><strong>L1 Prompt</strong><br />
+- Anthropic Prompt Caching（2024-08，省 90% 成本）<br />
+- Anthropic 《Prompt Engineering Overview》（2024-05）<br />
+- OpenAI Structured Outputs（2024-08）+ OpenAI Prompt Caching（2024-10）<br />
+- Lilian Weng《Prompt Engineering》<br />
+- DSPy（Stanford NLP，2024-04 开源）<br />
+- Anthropic Tool Use / Claude 3（2024-04）</p>
+<p><strong>L2 Tools</strong><br />
+- Anthropic Agentic Tool Use Best Practices（2024-10/11）<br />
+- Claude Code "4 种能力原语"（Read/Write/Execute/Connect）<br />
+- "不要建 100 个工具，给模型一个 shell"（Anthropic 内部非官方）<br />
+- OpenAI Code Interpreter（2024）<br />
+- <strong>Model Context Protocol (MCP)</strong>（2024-11）→ 2025 行业标准<br />
+- <strong>WebMCP</strong>（2026-03 Chrome，<code>navigator.modelContext</code>）</p>
+<p><strong>L3 Memory</strong><br />
+- Lilian Weng《LLM Powered Autonomous Agents》<br />
+- KV Cache 三路线（vLLM PagedAttention / SGLang RadixAttention / DeepSeek-V2 MLA / PyramidKV）<br />
+- <strong>TencentDB Agent Memory</strong> 4 层架构 L0/L1/L2/L3<br />
+- <strong>MemoryAgentBench</strong> 4 大能力（CR 多跳 6%）<br />
+- <strong>Mem0</strong>（arXiv:2504.19413，+26% 准确率 / -91% 成本）<br />
+- THEANINE / RMM / ai-memory / teamai-cli</p>
+<p><strong>L4 Skills</strong><br />
+- Anthropic Skills 官方库 + 三层加载架构<br />
+- "Skill 抬高下限不抬高上限"<br />
+- 求是 Skill（毛选方法论 + 2k Star，2026-04）<br />
+- MiniMax-AI/skills vs OfficeCLI 路线对比<br />
+- Skillify / SkillOS / SkillSpector / SkillLens / SkillScan 工具链<br />
+- Skills-Oriented Programming（SOP）白皮书（2026-05）<br />
+- Shepherd（Stanford Manning 组，2026-08）</p>
+<p><strong>L5 Subagents</strong><br />
+- Harness Engineering 6 大支柱（腾讯，2026-07）<br />
+- "上下文防火墙"范式（"不是微服务，不是消息队列"）<br />
+- 6 种多 Agent 协作模式（Pipeline / Routing / Skills / Subagents / Supervisor / Handoffs）<br />
+- "单 Agent 优先"原则 + 4 个复杂度阈值<br />
+- Multica / HiClaw（阿里 Matrix 协议）/ Ruflo（Token -75%）<br />
+- 深即达 A2A IM（agent 之间的"微信"）/ CLI-Anything / Agent Teams<br />
+- Anthropic Prompt Caching + Extended Caching（1 小时 TTL）</p>
+<p><strong>L6 Evaluation</strong><br />
+- <strong>孙敦灿《Agent 评测体系设计》</strong>（22,000 字，2026-07-11）<br />
+- 3 道门槛（非确定性 / 黑盒化 / 错误级联放大）+ 假阳性<br />
+- 4 个评测层次（Turn / Session / Trace / Outcome）<br />
+- 5 大类指标（P0/P1/P2/Skill 子指标/一致性）<br />
+- "至少一次成功率 vs 连续成功率" + 每组 200+ 样本 + p &lt; 0.05<br />
+- LLM-as-a-Judge 双盲 + Eval-Driven Development (EDD)</p>
+<p><strong>L7 Self-Improvement</strong><br />
+- <strong>RHI (Recursive Harness Self-Improvement)</strong> — Sakana AI + UC Berkeley + Stanford + Databricks, arXiv:2607.15524, <strong>推理成本 -60%</strong><br />
+- <strong>DeepSeek Harness (DSH)</strong> — 17.1万★, "一切皆插件"哲学, 2026-08<br />
+- <strong>Cordis Meta-Framework</strong> — shigma/cordis 6.5K★, 时间/空间可组合性, "忒修斯之船"<br />
+- <strong>Shepherd</strong> — Stanford Manning 组, 2,313★, Git 原生 agent, <strong>CooperBench 28.8%→54.7%</strong><br />
+- <strong>Harness Engineering</strong>（Birgitta Böckeler, QCon 2026）<br />
+- <strong>Harness Self-Improvement 5 步闭环</strong><br />
+- alphaXiv 复现 caveat — Qwen2.5-Coder-14B 跑 RHI 平手，验证需 Sonnet 级别基座</p>
+<p><strong>全书统计</strong><br />
+- 7 章 + 1 终章 = 8 篇<br />
+- 约 50,000 字<br />
+- 引用 60+ 个真实项目 / 论文 / 文档<br />
+- 时间跨度：2024 年 3 月 — 2027 年 4 月</p>
+<hr />
+<h2 id="_10"><strong>— 全书完 —</strong></h2>
+<hr />
+<h1 id="a-60">附录 A · 60+ 引用项目完整索引</h1>
+<blockquote>
+<p>全部来自 <code>C:\Users\Administrator\clawd\memory\wiki\</code>（803 pages / 2,138 wikilinks / 0 unresolved）<br />
+按 L1-L7 排序</p>
+</blockquote>
+<hr />
+<h2 id="l1-prompt6">L1 Prompt（6 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Anthropic Prompt Caching</strong>（2024-08）</td>
+<td>Anthropic 在 API 层加 cache_control 块，长 prompt 复用</td>
+<td><strong>省 90% 成本 + 减 85% 延迟</strong></td>
+</tr>
+<tr>
+<td><strong>Anthropic 《Prompt Engineering Overview》</strong>（2024-05）</td>
+<td>Anthropic 官方 prompt 指南</td>
+<td>30 页</td>
+</tr>
+<tr>
+<td><strong>OpenAI Structured Outputs</strong>（2024-08）</td>
+<td>OpenAI 把 JSON 输出做成 API 强制</td>
+<td>失败率 &lt; 1%</td>
+</tr>
+<tr>
+<td><strong>OpenAI Prompt Caching</strong>（2024-10）</td>
+<td>OpenAI 也加了 prompt caching</td>
+<td>跟 Anthropic 类似</td>
+</tr>
+<tr>
+<td><strong>Lilian Weng《Prompt Engineering》</strong>（2023-03，多版更新）</td>
+<td>前 OpenAI 安全研究员的 prompt 长文</td>
+<td>1 万+ 字</td>
+</tr>
+<tr>
+<td><strong>DSPy</strong>（Stanford NLP，2024-04）</td>
+<td>把 prompt 当作可编译的程序，自动优化</td>
+<td>BootstrapFewShot</td>
+</tr>
+<tr>
+<td><strong>Anthropic Tool Use</strong>（2024-04，Claude 3）</td>
+<td>Claude 3 引入 function calling</td>
+<td>业界第一个 main-stream tool use</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l2-tools6">L2 Tools（6 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Anthropic Agentic Tool Use 最佳实践</strong>（2024-10/11）</td>
+<td>错误处理 / fallback / 描述写作</td>
+<td>业界标准</td>
+</tr>
+<tr>
+<td><strong>Claude Code "4 种能力原语"</strong></td>
+<td>Read/Write/Execute/Connect</td>
+<td>"不要建 100 个工具"哲学</td>
+</tr>
+<tr>
+<td><strong>OpenAI Code Interpreter</strong>（2024）</td>
+<td>给 ChatGPT 一个 Python sandbox</td>
+<td>内置工具</td>
+</tr>
+<tr>
+<td><strong>Model Context Protocol (MCP)</strong>（2024-11）</td>
+<td>Anthropic 推的工具协议</td>
+<td>2025 行业标准</td>
+</tr>
+<tr>
+<td><strong>WebMCP</strong>（2026-03 Chrome）</td>
+<td>网站直接向 agent 暴露结构化工具</td>
+<td><code>navigator.modelContext</code></td>
+</tr>
+<tr>
+<td><strong>MCP 跨厂支持</strong>（2025-2026）</td>
+<td>OpenAI 2025-03 / Google 2025-06 / DeepSeek 2025-08</td>
+<td>3 大厂全部支持</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l3-memory8">L3 Memory（8 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lilian Weng《LLM Powered Autonomous Agents》</strong>（2023-08）</td>
+<td>agent 综述</td>
+<td>持续更新</td>
+</tr>
+<tr>
+<td><strong>vLLM PagedAttention</strong>（2023）</td>
+<td>把 KV Cache 分页管理</td>
+<td>吞吐 2-4×</td>
+</tr>
+<tr>
+<td><strong>SGLang RadixAttention</strong>（2024）</td>
+<td>prefix cache</td>
+<td>RAG 吞吐 5-10×</td>
+</tr>
+<tr>
+<td><strong>DeepSeek-V2 MLA</strong>（2024）</td>
+<td>multi-latent attention</td>
+<td>KV Cache 压缩 93%</td>
+</tr>
+<tr>
+<td><strong>PyramidKV</strong>（2024）</td>
+<td>只保留 12% KV Cache</td>
+<td>性能与全量相当</td>
+</tr>
+<tr>
+<td><strong>TencentDB Agent Memory</strong>（2025-08）</td>
+<td>4 层记忆 L0/L1/L2/L3</td>
+<td>2,600 session → 5,081 task</td>
+</tr>
+<tr>
+<td><strong>MemoryAgentBench</strong>（2025）</td>
+<td>4 大能力评测（AR/TTL/LRU/CR）</td>
+<td><strong>CR 多跳 6%</strong></td>
+</tr>
+<tr>
+<td><strong>Mem0</strong>（arXiv:2504.19413，2025-04）</td>
+<td>memory-as-a-service</td>
+<td>LOCOMO 准确率 +26% / 成本 -91%</td>
+</tr>
+<tr>
+<td><strong>THEANINE / RMM</strong>（2024-2025）</td>
+<td>反思记忆 / 短长反思三层</td>
+<td>客服场景 +18%</td>
+</tr>
+<tr>
+<td><strong>ai-memory</strong>（Fabio Akita，2026-08）</td>
+<td>个人级跨 agent 长期记忆</td>
+<td>Rust 单二进制</td>
+</tr>
+<tr>
+<td><strong>teamai-cli</strong>（Tencent，2026-08）</td>
+<td>团队级 20+ AI 工具统一</td>
+<td>Git 原生分发</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l4-skills6">L4 Skills（6 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Anthropic Skills 官方库</strong>（2024-10）</td>
+<td>pdf/docx/xlsx/pptx 等 Skill</td>
+<td>一线厂商</td>
+</tr>
+<tr>
+<td><strong>Anthropic "Skill 三层加载架构"</strong>（2025-12）</td>
+<td>发现/激活/执行</td>
+<td>启动开销 5600→400 token</td>
+</tr>
+<tr>
+<td><strong>求是 Skill</strong>（2026-04）</td>
+<td>毛选方法论武装</td>
+<td><strong>GitHub 2k+ Star</strong></td>
+</tr>
+<tr>
+<td><strong>MiniMax-AI/skills vs OfficeCLI</strong></td>
+<td>平台路线 vs 专家路线</td>
+<td>2026-04 对比</td>
+</tr>
+<tr>
+<td><strong>Skillify / SkillOS / SkillSpector / SkillLens / SkillScan</strong></td>
+<td>Skill 工具链</td>
+<td>5 个工具</td>
+</tr>
+<tr>
+<td><strong>Skills-Oriented Programming（SOP）</strong></td>
+<td>Anthropic 白皮书</td>
+<td>2026-05</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l5-subagents6">L5 Subagents（6 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Harness Engineering 6 大支柱</strong></td>
+<td>上下文/工具/编排/状态/评估/约束</td>
+<td>腾讯 2026-07</td>
+</tr>
+<tr>
+<td><strong>"上下文防火墙"范式</strong></td>
+<td>"不是微服务，不是消息队列"</td>
+<td>Anthropic 2026-09</td>
+</tr>
+<tr>
+<td><strong>6 种多 Agent 协作模式</strong></td>
+<td>Pipeline/Routing/Skills/Subagents/Supervisor/Handoffs</td>
+<td>业界共识</td>
+</tr>
+<tr>
+<td><strong>Multica</strong>（2025 开源）</td>
+<td>编程 agent 变队友</td>
+<td><strong>4k+ Star</strong></td>
+</tr>
+<tr>
+<td><strong>HiClaw</strong>（阿里，2026）</td>
+<td>多 Agent OS + Matrix 协议</td>
+<td>阿里开源</td>
+</tr>
+<tr>
+<td><strong>Ruflo</strong>（2026-03）</td>
+<td>Claude Code 多智能体编排</td>
+<td><strong>Token 成本 -75%</strong></td>
+</tr>
+<tr>
+<td><strong>深即达 A2A IM</strong>（2026-03）</td>
+<td>agent 之间的"微信"</td>
+<td>业界首创</td>
+</tr>
+<tr>
+<td><strong>CLI-Anything / Agent Teams</strong></td>
+<td>群体智能</td>
+<td>Claude Code 2026-06</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l6-evaluation4">L6 Evaluation（4 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>孙敦灿《Agent 评测体系设计》</strong>（2026-07-11）</td>
+<td>22,000 字评测长文</td>
+<td>业界最系统</td>
+</tr>
+<tr>
+<td><strong>3 道门槛 + 假阳性</strong></td>
+<td>非确定性 / 黑盒化 / 错误级联</td>
+<td>体系化总结</td>
+</tr>
+<tr>
+<td><strong>4 个评测层次</strong></td>
+<td>Turn/Session/Trace/Outcome</td>
+<td>必须同时看</td>
+</tr>
+<tr>
+<td><strong>5 大类指标</strong></td>
+<td>P0/P1/P2/Skill 子指标/一致性</td>
+<td>P0 = 上线门禁</td>
+</tr>
+<tr>
+<td><strong>至少一次 vs 连续成功率</strong></td>
+<td>生产关心连续</td>
+<td>每组 200+ 样本</td>
+</tr>
+<tr>
+<td><strong>LLM-as-a-Judge 双盲</strong></td>
+<td>双模型一致才算</td>
+<td>模型 A + 模型 B</td>
+</tr>
+<tr>
+<td><strong>Eval-Driven Development (EDD)</strong></td>
+<td>写 eval 先于写 prompt</td>
+<td>2026 年新方法论</td>
+</tr>
+</tbody>
+</table>
+<h2 id="l7-self-improvement5">L7 Self-Improvement（5 项）</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>一句话</th>
+<th>关键数据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RHI (Recursive Harness Self-Improvement)</strong></td>
+<td>Sakana AI + UC Berkeley + Stanford + Databricks</td>
+<td><strong>arXiv:2607.15524</strong> / 推理成本 -60%</td>
+</tr>
+<tr>
+<td><strong>DeepSeek Harness (DSH)</strong></td>
+<td>一切皆插件</td>
+<td><strong>17.1万★</strong> / 2026-08</td>
+</tr>
+<tr>
+<td><strong>Cordis Meta-Framework</strong></td>
+<td>时间/空间可组合性</td>
+<td><strong>6.5K★</strong> / shigma/cordis</td>
+</tr>
+<tr>
+<td><strong>Shepherd</strong></td>
+<td>Stanford Manning 组 Git 原生 agent</td>
+<td><strong>2,313★</strong> / CooperBench 28.8%→54.7%</td>
+</tr>
+<tr>
+<td><strong>Harness Engineering</strong>（Birgitta Böckeler, QCon 2026）</td>
+<td>"Harness = 一切加在一起"</td>
+<td>QCon 演讲</td>
+</tr>
+<tr>
+<td><strong>Harness Self-Improvement 5 步闭环</strong></td>
+<td>跑任务 / 收集 trace / 发现失败 / 提出新 harness / 独立 eval</td>
+<td>本书总结</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="b-2024-2027">附录 B · 真实时间线（2024-2027）</h1>
+<table>
+<thead>
+<tr>
+<th>时间</th>
+<th>事件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2024-03</strong></td>
+<td>Anthropic 推出 Claude 3 + Tool Use</td>
+</tr>
+<tr>
+<td><strong>2024-04</strong></td>
+<td>DSPy 开源（Stanford NLP）</td>
+</tr>
+<tr>
+<td><strong>2024-05</strong></td>
+<td>Anthropic 《Prompt Engineering Overview》发布</td>
+</tr>
+<tr>
+<td><strong>2024-08</strong></td>
+<td>Anthropic Prompt Caching（省 90% 成本）</td>
+</tr>
+<tr>
+<td><strong>2024-08</strong></td>
+<td>OpenAI Structured Outputs</td>
+</tr>
+<tr>
+<td><strong>2024-10</strong></td>
+<td>Anthropic Agentic Tool Use 最佳实践</td>
+</tr>
+<tr>
+<td><strong>2024-10</strong></td>
+<td>OpenAI Prompt Caching</td>
+</tr>
+<tr>
+<td><strong>2024-11</strong></td>
+<td><strong>Model Context Protocol (MCP)</strong> 推出</td>
+</tr>
+<tr>
+<td><strong>2025-03</strong></td>
+<td>OpenAI 支持 MCP</td>
+</tr>
+<tr>
+<td><strong>2025-04</strong></td>
+<td>Mem0 论文发布（arXiv:2504.19413）</td>
+</tr>
+<tr>
+<td><strong>2025-06</strong></td>
+<td>Google Gemini 支持 MCP</td>
+</tr>
+<tr>
+<td><strong>2025-08</strong></td>
+<td>DeepSeek 支持 MCP</td>
+</tr>
+<tr>
+<td><strong>2025-08</strong></td>
+<td>DeepSeek 推出 TencentDB Agent Memory 4 层架构</td>
+</tr>
+<tr>
+<td><strong>2025-12</strong></td>
+<td>Anthropic "Skill 三层加载架构" 文档</td>
+</tr>
+<tr>
+<td><strong>2026-03</strong></td>
+<td><strong>WebMCP</strong>（Chrome）</td>
+</tr>
+<tr>
+<td><strong>2026-03</strong></td>
+<td><strong>深即达 A2A IM</strong></td>
+</tr>
+<tr>
+<td><strong>2026-03</strong></td>
+<td>Ruflo（Claude Code 多智能体编排，Token -75%）</td>
+</tr>
+<tr>
+<td><strong>2026-04</strong></td>
+<td>求是 Skill 开源（毛选方法论，2k+ Star）</td>
+</tr>
+<tr>
+<td><strong>2026-05</strong></td>
+<td>Skills-Oriented Programming（SOP）白皮书</td>
+</tr>
+<tr>
+<td><strong>2026-06</strong></td>
+<td><strong>Agent Teams</strong>（Claude Code）</td>
+</tr>
+<tr>
+<td><strong>2026-06</strong></td>
+<td>Agent_Evaluation_System wiki 整理</td>
+</tr>
+<tr>
+<td><strong>2026-07-11</strong></td>
+<td>孙敦灿《Agent 评测体系设计》22,000 字</td>
+</tr>
+<tr>
+<td><strong>2026-07</strong></td>
+<td>腾讯程序员《Harness Engineering 团队落地规范》10 章</td>
+</tr>
+<tr>
+<td><strong>2026-08-17</strong></td>
+<td><strong>RHI</strong> 论文发布（arXiv:2607.15524）</td>
+</tr>
+<tr>
+<td><strong>2026-08</strong></td>
+<td><strong>DeepSeek Harness (DSH)</strong> 17.1万★</td>
+</tr>
+<tr>
+<td><strong>2026-08</strong></td>
+<td><strong>Shepherd</strong> 论文发布（Stanford Manning 组）</td>
+</tr>
+<tr>
+<td><strong>2026-08</strong></td>
+<td><strong>ai-memory</strong>（Fabio Akita）</td>
+</tr>
+<tr>
+<td><strong>2026-08</strong></td>
+<td><strong>teamai-cli</strong>（Tencent）</td>
+</tr>
+<tr>
+<td><strong>2026-09</strong></td>
+<td>Anthropic "上下文防火墙" 内部演讲</td>
+</tr>
+<tr>
+<td><strong>2027-03-04</strong></td>
+<td>Shepherd 团队邀请作者去 Stanford workshop</td>
+</tr>
+<tr>
+<td><strong>2027-04-12</strong></td>
+<td>Stanford "Agent Harness: From Engineering to Co-evolution" workshop</td>
+</tr>
+<tr>
+<td><strong>2027-04-14</strong></td>
+<td>DSH 团队晚宴：L7 之后的范式讨论</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="c">附录 C · 术语速查</h1>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Harness</strong></td>
+<td>包裹 LLM 的"马具"——prompt + tools + memory + skills + eval + ...</td>
+</tr>
+<tr>
+<td><strong>Agent</strong></td>
+<td>Model + Harness = 能自主跑任务的 AI</td>
+</tr>
+<tr>
+<td><strong>Skill</strong></td>
+<td>把"专家知识"封装为可复用的模块（SKILL.md 文件夹）</td>
+</tr>
+<tr>
+<td><strong>Subagent</strong></td>
+<td>拥有独立 context window 的子任务执行者</td>
+</tr>
+<tr>
+<td><strong>Eval</strong></td>
+<td>把"感觉好不好"变成"可量化、可回归"的指标体系</td>
+</tr>
+<tr>
+<td><strong>Self-Improvement</strong></td>
+<td>agent 用 eval 反馈改自己 harness 的能力</td>
+</tr>
+<tr>
+<td><strong>MCP</strong></td>
+<td>Model Context Protocol，工具调用协议标准</td>
+</tr>
+<tr>
+<td><strong>KV Cache</strong></td>
+<td>LLM 推理的"短期记忆"基础设施</td>
+</tr>
+<tr>
+<td><strong>KV Cache 命中率</strong></td>
+<td>prompt 重复部分能被 cache 复用的比例</td>
+</tr>
+<tr>
+<td><strong>RAG</strong></td>
+<td>Retrieval-Augmented Generation，检索增强生成</td>
+</tr>
+<tr>
+<td><strong>Few-shot</strong></td>
+<td>在 prompt 里加几个例子让模型"照葫芦画瓢"</td>
+</tr>
+<tr>
+<td><strong>CoT (Chain of Thought)</strong></td>
+<td>让模型"一步一步想"的技术</td>
+</tr>
+<tr>
+<td><strong>EDR / EDD</strong></td>
+<td>Eval-Driven Development，写 eval 先于写 prompt</td>
+</tr>
+<tr>
+<td><strong>RSI</strong></td>
+<td>Recursive Self-Improvement，递归自我改进</td>
+</tr>
+<tr>
+<td><strong>OS-level harness</strong></td>
+<td>操作系统层面的 agent 框架（如 DSH）</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="d">附录 D · 引用约定</h1>
+<p>每章末尾的"引用"段引用了<strong>项目名 / 论文 / 文档</strong>，但<strong>没有给 URL</strong>——避免本书膨胀。</p>
+<p>如果你想追溯某个项目，建议入口：</p>
+<ul>
+<li><strong>GitHub 项目</strong>：<a href="https://github.com/">github.com/</a> 直接搜名字</li>
+<li><strong>arXiv 论文</strong>：<a href="https://arxiv.org/">arxiv.org/abs/&lt;论文号&gt;</a></li>
+<li><strong>Anthropic 文档</strong>：<a href="https://docs.anthropic.com">docs.anthropic.com</a></li>
+<li><strong>OpenAI 文档</strong>：<a href="https://platform.openai.com/docs">platform.openai.com/docs</a></li>
+<li><strong>DeepSeek 平台</strong>：<a href="https://api-docs.deepseek.com">api-docs.deepseek.com</a></li>
+<li><strong>公众号文章</strong>：在微信搜索对应关键词</li>
+</ul>
+<p>完整 wiki 索引（803 页 / 2,138 wikilinks）：</p>
+<blockquote>
+<p><code>C:\Users\Administrator\clawd\memory\wiki\index.md</code></p>
+</blockquote>
+<hr />
+<p><strong>— 附录完 —</strong></p>
+<hr />
+</body>
+</html>

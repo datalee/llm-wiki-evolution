@@ -1,5 +1,13 @@
 # LLM Wiki Evolution
 
+> 🆕 **2026-09-09** — New practice output: *The Seven-Layer Tower* (《七层塔》), a fact-grounded
+> nonfiction novel about how the AI agent harness stack evolved — L1 Prompt → L2 Tools →
+> L3 Memory → L4 Skills → L5 Subagents → L6 Evaluation → L7 Self-Improvement — written entirely
+> on top of a production wiki maintained with this skill.
+> Read it as [full article (HTML)](assets/seven-layer-tower/七层塔-全文.html) ·
+> [PDF](assets/seven-layer-tower/七层塔-全文.pdf) ·
+> [interactive edition](assets/seven-layer-tower/七层塔-可交互.html).
+
 A skill that evolves and governs a Karpathy-style LLM wiki into a reliable
 decision-grade knowledge system. Use it to audit an existing wiki, fix
 structural issues, ingest sources with automatic backlinking, and enforce
