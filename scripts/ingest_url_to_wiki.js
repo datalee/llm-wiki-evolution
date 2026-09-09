@@ -77,11 +77,37 @@ function bestTitle(html, fallback = "Untitled") {
   return t;
 }
 
+function extractWeChatContent(html) {
+  // Balanced-div extraction: js_content contains nested <div>s, so a
+  // non-greedy match to the first </div> silently truncates long articles.
+  const start = html.search(/id="js_content"/i);
+  if (start === -1) return null;
+  const openIdx = html.indexOf(">", start) + 1;
+  const re = /<div\b[^>]*>|<\/div>/gi;
+  re.lastIndex = openIdx;
+  let depth = 1;
+  let end = -1;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    if (m[0][1] === "/") {
+      depth -= 1;
+      if (depth === 0) {
+        end = m.index;
+        break;
+      }
+    } else {
+      depth += 1;
+    }
+  }
+  if (end === -1) return null;
+  return html.slice(openIdx, end);
+}
+
 function extractMain(html, url) {
   // WeChat preferred content container
   if (/mp\.weixin\.qq\.com/.test(url)) {
-    const m = html.match(/id="js_content"[^>]*>([\s\S]*?)<\/div>/i);
-    if (m) return stripHtml(m[1]);
+    const wechat = extractWeChatContent(html);
+    if (wechat) return stripHtml(wechat);
   }
   // Generic fallbacks
   const article = html.match(/<article[^>]*>([\s\S]*?)<\/article>/i);
@@ -170,8 +196,10 @@ async function main() {
   fs.writeFileSync(filePath, "\ufeff" + lines.join("\n"), "utf8");
 
   const rel = `sources/${fileName}`;
-  appendIfExists(indexFile, `- ${date} [[${title}]](${rel})`);
-  appendIfExists(logFile, `- ${date} ingest: [[${title}]](${rel}) from ${sourceType}`);
+  // Single-bracket markdown link — the wiki's index/log convention. Double brackets
+  // ([[title]]) would be parsed as a wikilink and reported unresolved by health scans.
+  appendIfExists(indexFile, `- ${date} [${title}](${rel})`);
+  appendIfExists(logFile, `- ${date} ingest: [${title}](${rel}) from ${sourceType}`);
 
   console.log("Saved:", filePath);
   console.log("Title:", title);

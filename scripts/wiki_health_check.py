@@ -9,10 +9,15 @@ WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]]*)?(?:\|[^\]]+)?\]\]")
 
 
 def norm(s: str) -> str:
-    s = s.strip().lower()
-    s = re.sub(r"[ _\-]+", "", s)
-    s = re.sub(r"[^\w\u4e00-\u9fff]", "", s)
-    return s
+    """Normalize a wiki link for matching.
+
+    Preserves '/' as a path separator (each segment normalized independently).
+    Within a segment, drops spaces / underscores / dashes to make
+    'Agent_Skills' / 'Agent-Skills' / 'agent skills' all equivalent.
+    Chinese characters are preserved.
+    """
+    s = s.strip()
+    return "/".join(re.sub(r"[ _\-]+", "", part.lower()) for part in s.split("/"))
 
 
 def scan(root: Path):
@@ -24,7 +29,17 @@ def scan(root: Path):
 
     page_norm = {}
     for p in pages:
-        page_norm.setdefault(norm(p.stem), []).append(p)
+        # Key 1: full relative path (matches [[concepts/dsh]])
+        rel_no_ext = p.relative_to(root).with_suffix("").as_posix()
+        rel_key = norm(rel_no_ext)
+        page_norm.setdefault(rel_key, []).append(p)
+        # Key 2: bare stem (fallback for [[bare_name]] wikilinks).
+        # Only add if stem key differs from rel key — otherwise the same file
+        # would be stored twice under the same key (root-level files like
+        # CLAUDE.md / index.md / log.md have stem == rel_no_ext).
+        stem_key = norm(p.stem)
+        if stem_key != rel_key:
+            page_norm.setdefault(stem_key, []).append(p)
 
     unresolved = []
     wikilink_total = 0
