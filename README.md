@@ -1,5 +1,7 @@
 # LLM Wiki Evolution
 
+English | [中文](./README.zh-CN.md)
+
 > 🆕 **2026-09-09** — New practice output: *The Seven-Layer Tower* (《七层塔》), a fact-grounded
 > nonfiction novel about how the AI agent harness stack evolved — L1 Prompt → L2 Tools →
 > L3 Memory → L4 Skills → L5 Subagents → L6 Evaluation → L7 Self-Improvement — written entirely
