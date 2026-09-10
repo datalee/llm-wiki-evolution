@@ -72,6 +72,49 @@ python scripts/make_alias_stub.py --root <wiki_root> \
   --from-health wiki-health-v2.json --min-freq 2
 ```
 
+## The daily ingest pipeline
+
+Every ingested article goes through this exact loop on the production wiki —
+classify, patch idempotently, auto-link, then verify against a running
+baseline. GitHub renders the diagram natively:
+
+```mermaid
+flowchart TD
+    A["WeChat article URL"] --> B["ingest_url_to_wiki.js"]
+    B --> C["sources/YYYY-MM-DD-slug.md<br/>(draft + frontmatter)"]
+    C --> D{"Human read &<br/>classify"}
+    D -->|"substantive concept,<br/>2nd independent mention"| E["Grow existing concept page<br/>(create page only on two-strike)"]
+    D -->|"person / product / tool"| F["Entity page section"]
+    D -->|"opinion piece / launch note /<br/>course promo"| G["Light touch: one entity line +<br/>source tagging only"]
+    E --> H["build_*.py idempotent patch<br/>UTF-8-sig · only link pages that exist"]
+    F --> H
+    G --> H
+    H --> I["auto_link_source.py --apply<br/>LLM extraction: matched backlinks<br/>+ unmatched-concept backlog"]
+    I --> J["wiki_health_v2.py --root"]
+    J --> K{"Diff vs baseline:<br/>pages / wikilinks /<br/>unresolved / orphans"}
+    K -->|"unresolved rises"| L["Find & fix the new dead link,<br/>re-verify"]
+    L --> J
+    K -->|"flat"| M["Ship · unmatched concepts stay<br/>as the page-creation backlog"]
+```
+
+1. **Ingest** — `ingest_url_to_wiki.js` lands a draft source page with
+   frontmatter (`source_url`, `captured_at`, tags).
+2. **Classify (human pass)** — substantive concepts grow existing pages; a
+   brand-new concept page is created only after two independent sources
+   mention it substantively (the two-strike rule). People, products and
+   tools belong on entity pages. Opinion pieces, launch notes and course
+   promos get a light touch only: one entity line plus source tagging.
+3. **Patch** — a one-off `build_*.py` applies the enrichment; it skips when
+   its section marker already exists (idempotent), writes UTF-8-sig, and may
+   only link pages that already exist.
+4. **Auto-link** — `auto_link_source.py` extracts concepts with an LLM,
+   appends the "Related sources" section, adds backlinks to matched pages,
+   and records unmatched concepts on the source page — that block doubles as
+   the page-creation backlog queue.
+5. **Verify** — `wiki_health_v2.py` diffs the four metrics against the
+   running baseline. `unresolved` must stay flat: any rise means a new dead
+   link was introduced, and the run does not ship until it is fixed.
+
 ## Hard-won practices from production
 
 These rules were baked into the scripts after running this workflow daily on

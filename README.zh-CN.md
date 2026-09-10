@@ -63,6 +63,43 @@ python scripts/make_alias_stub.py --root <wiki_root> \
   --from-health wiki-health-v2.json --min-freq 2
 ```
 
+## 每日入库流水线
+
+每一篇入库文章在生产 wiki 上走的都是这条固定链路——判定、幂等补强、自动
+补链、对基线验证。GitHub 原生渲染下面的流程图：
+
+```mermaid
+flowchart TD
+    A["微信文章 URL"] --> B["ingest_url_to_wiki.js"]
+    B --> C["sources/YYYY-MM-DD-slug.md<br/>（draft + frontmatter）"]
+    C --> D{"人工阅读与判定"}
+    D -->|"实质概念<br/>第 2 次独立提及"| E["补强既有概念页<br/>（二抽达标才建新页）"]
+    D -->|"人物 / 产品 / 工具"| F["实体页小节"]
+    D -->|"观点文 / 发布文 /<br/>课程招募文"| G["轻处理：一条实体页关联 +<br/>仅标注 source"]
+    E --> H["build_*.py 幂等补丁<br/>UTF-8-sig · 只链已存在页面"]
+    F --> H
+    G --> H
+    H --> I["auto_link_source.py --apply<br/>LLM 抽取：匹配回链<br/>+ 未匹配概念欠账"]
+    I --> J["wiki_health_v2.py --root"]
+    J --> K{"对基线 diff：<br/>pages / wikilinks /<br/>unresolved / orphans"}
+    K -->|"unresolved 上涨"| L["定位并修掉新死链<br/>重新验证"]
+    L --> J
+    K -->|"持平"| M["收官 · 未匹配概念留作<br/>建页欠账队列"]
+```
+
+1. **入库** —— `ingest_url_to_wiki.js` 抓取文章，落一份带 frontmatter
+   （`source_url` / `captured_at` / tags）的 draft source 页。
+2. **判定（人工）** —— 实质概念补强既有页；全新概念页只在两个独立来源
+   实质性提及后才建（二抽标准）。人物、产品、工具归实体页。观点文、
+   发布文、课程招募文只做轻处理：一条实体页关联 + 仅标注 source。
+3. **补强** —— 一次性 `build_*.py` 落地补强；节标记已存在则跳过（幂等），
+   UTF-8-sig 写入，且只允许链接已存在的页面。
+4. **自动链接** —— `auto_link_source.py` 用 LLM 抽取概念，追加"相关来源"
+   段、给匹配页加反链，并把未匹配概念记在 source 页上——这个块同时就是
+   建页欠账队列。
+5. **验证** —— `wiki_health_v2.py` 对四项指标与滚动基线做 diff。
+   `unresolved` 必须持平：一旦上涨即引入了新死链，修完才算收官。
+
 ## 来自生产环境的实战经验
 
 以下规则是在一个 1300+ 页的生产 wiki 上日常运行本流程后，固化进脚本里的。
