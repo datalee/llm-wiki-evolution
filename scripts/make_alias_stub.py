@@ -24,10 +24,11 @@ import argparse
 import json
 import re
 from collections import Counter, defaultdict
+from datetime import date
 from pathlib import Path
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]]*)?(?:\|[^\]]+)?\]\]")
-TODAY = "2026-09-03"  # update when re-running
+TODAY = date.today().isoformat()
 
 
 def make_stub(name: str, target: str | None, reason: str, sources: list[str], tags: list[str]) -> str:
