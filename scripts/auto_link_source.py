@@ -56,6 +56,8 @@ CONCEPT_HINTS = {
     "ai agent": "concepts/Agent",
     "llm agent": "concepts/Agent",
     "agentic ai": "concepts/Agent",
+    "context compression": "aliases/context-management",
+    "context compaction": "concepts/Context_Compaction",
 }
 
 
