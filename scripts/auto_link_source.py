@@ -40,6 +40,30 @@ def norm(s: str) -> str:
     return re.sub(r"[ _\-]+", "", s.strip().lower())
 
 
+# Manual concept hints: fix systematic normalized-key misses where the LLM's
+# extraction phrasing differs from the actual page name (e.g. "Multi-Agent
+# System" vs concepts/Multi-Agent, "Long-Term Memory" vs concepts/Agent_Memory).
+# Consulted ONLY as a fallback after organic search-term matching fails, and
+# only if the target page exists in the wiki. Keys are human-readable and are
+# normalized with norm() before lookup. Add new entries as misses are observed.
+CONCEPT_HINTS = {
+    "multi-agent system": "concepts/Multi-Agent",
+    "multi-agent collaboration": "concepts/Multi-Agent",
+    "multi agent system": "concepts/Multi-Agent",
+    "long-term memory": "concepts/Agent_Memory",
+    "long term memory": "concepts/Agent_Memory",
+    "ltm": "concepts/Agent_Memory",
+    "ai agent": "concepts/Agent",
+    "llm agent": "concepts/Agent",
+    "agentic ai": "concepts/Agent",
+}
+
+
+def build_hint_index() -> dict:
+    """Normalize hint keys once for direct lookup."""
+    return {norm(k): v for k, v in CONCEPT_HINTS.items()}
+
+
 # === Step 1: Read source ===
 
 def read_source(path: Path, max_chars: int = 4000) -> str:
@@ -200,7 +224,8 @@ def build_page_index(wiki_root: Path):
     return by_norm
 
 
-def find_match(concept: dict, by_norm: dict) -> str | None:
+def find_match(concept: dict, by_norm: dict, hint_index: dict | None = None,
+               valid_pages: set | None = None) -> str | None:
     """Try to find a wiki page for the given concept."""
     search_terms = [concept.get("name", "")] + concept.get("search_terms", [])
     candidates = []
@@ -224,6 +249,16 @@ def find_match(concept: dict, by_norm: dict) -> str | None:
                 if p.startswith(prefix):
                     return p
         return candidates[0]
+    # Fallback: manual hint map (fixes phrasing-vs-page-name misses).
+    # Only fires when organic matching failed, and only for targets that
+    # actually exist in the wiki (prevents dead links from stale hints).
+    if hint_index and valid_pages is not None:
+        for term in search_terms:
+            if not term:
+                continue
+            hint = hint_index.get(norm(term))
+            if hint and hint in valid_pages:
+                return hint
     return None
 
 
@@ -255,11 +290,13 @@ def main():
     # 3. Build page index
     by_norm = build_page_index(wiki_root)
     print(f"wiki page index: {len(by_norm)} normalized keys\n")
+    hint_index = build_hint_index()
+    valid_pages = {rel for paths in by_norm.values() for rel in paths}
 
     # 4. Match + propose plan
     plan = []
     for c in concepts:
-        match = find_match(c, by_norm)
+        match = find_match(c, by_norm, hint_index, valid_pages)
         plan.append({
             "concept": c.get("name", ""),
             "category_guess": c.get("category_guess", ""),
