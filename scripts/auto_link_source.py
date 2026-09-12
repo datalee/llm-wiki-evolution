@@ -63,6 +63,7 @@ CONCEPT_HINTS = {
     "llm-as-a-judge": "concepts/Agent_Evaluation_System",
     "orchestrator agent": "concepts/Multi-Agent",
     "orchestrator-worker": "concepts/Multi-Agent",
+    "multi-agent orchestration": "concepts/Multi-Agent",
 }
 
 
