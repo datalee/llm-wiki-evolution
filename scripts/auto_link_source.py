@@ -58,6 +58,9 @@ CONCEPT_HINTS = {
     "agentic ai": "concepts/Agent",
     "context compression": "aliases/context-management",
     "context compaction": "concepts/Context_Compaction",
+    "llm as judge": "concepts/Agent_Evaluation_System",
+    "llm as a judge": "concepts/Agent_Evaluation_System",
+    "llm-as-a-judge": "concepts/Agent_Evaluation_System",
 }
 
 
