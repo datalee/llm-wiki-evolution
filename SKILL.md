@@ -66,7 +66,7 @@ python scripts/wiki_health_v2.py --root <wiki_root> --out <wiki_root>/.understan
 is a bare-stem variant kept only for generating a `canonical-map.csv` starter.
 Diff a change against the previous baseline before accepting it:
 ```powershell
-python scripts/diff_final_vs_baseline.py   # edit line 6 to point at the new report
+python scripts/diff_final_vs_baseline.py <new_report.json>   # optional arg overrides the default pair hard-coded inside
 ```
 
 ### Querying a wiki at runtime: `wiki-mcp`

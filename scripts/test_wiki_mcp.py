@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Smoke tests for wiki-mcp server: protocol layer + the three tools."""
 import json
+import os
 import subprocess
 import sys
 import time
@@ -9,6 +10,17 @@ from pathlib import Path
 
 PY = sys.executable
 SERVER = Path(__file__).with_name("mcp_server.py")
+
+# The suite asserts on specific pages of the author's local wiki (fixtures:
+# entities/OpenViking, concepts/RLCD, ...). On any other checkout these are
+# missing -- skip loudly instead of producing 30 confusing FAILs.
+_ROOT = Path(os.environ.get(
+    "WIKI_MCP_ROOT", r"C:\Users\Administrator\clawd\memory\wiki"))
+if not (_ROOT / "entities" / "OpenViking.md").is_file():
+    print("SKIP: fixture pages not found under %s -- this suite expects the "
+          "author's local wiki; point WIKI_MCP_ROOT at a wiki containing "
+          "entities/OpenViking.md and the other fixture pages." % _ROOT)
+    sys.exit(2)
 
 passed, failed = [], []
 
@@ -215,12 +227,31 @@ try:
     check("evidence: surfaces 防裸报清单",
           any(s["heading"] == "## 防裸报清单"
               for s in e2.get("evidence_sections", [])))
+    # sections must carry actual content, not just headings (guards against
+    # a regression where the section loop body never runs)
+    check("evidence: RLCD 关联 section has items",
+          any(s["heading"] == "## 关联" and s["items"]
+              for s in e.get("evidence_sections", [])))
+    check("evidence: oomol 防裸报清单 section has items",
+          any(s["heading"] == "## 防裸报清单" and s["items"]
+              for s in e2.get("evidence_sections", [])))
+    # prefix matching: variant headings actually used in this wiki
+    _, e3 = call(proc, 70, "wiki_evidence", {"ref": "concepts/AI_Native_Org"})
+    heads3 = [s["heading"] for s in e3.get("evidence_sections", [])]
+    check("evidence: prefix match catches 关联来源/关联概念 variants",
+          "## 关联来源" in heads3 and "## 关联概念" in heads3, str(heads3))
+    # URL scanner must not swallow fullwidth/CJK punctuation into the URL
+    _, e4 = call(proc, 71, "wiki_evidence",
+                 {"ref": "entities/andrej-karpathy-skills"})
+    check("evidence: urls have no CJK tails",
+          all(u["url"].isascii() for u in e4.get("external_urls", [])),
+          str([u["url"] for u in e4.get("external_urls", [])][:3]))
 
     refs = ["concepts/RLCD", "concepts/Recursive_Self_Improvement",
             "concepts/Ontology"]
     result, p = call(proc, 67, "wiki_pack", {"refs": refs, "budget": 800})
     check("pack: stays within token budget",
-          p["meta"] if False else p.get("spent_tokens_est", 1e9) <= 800)
+          p.get("spent_tokens_est", 10**9) <= 800)
     check("pack: reports within_budget", p.get("within_budget") is True)
     check("pack: every entry citable",
           all("cite_as" in c for c in p.get("context", [])))

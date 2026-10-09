@@ -552,7 +552,8 @@ def _est_tokens(text):
     return cjk + (other + 3) // 4
 
 
-_URL_RE = re.compile(r"https?://[^\s\)\]\|<>\"']+")
+_URL_RE = re.compile(
+    r"https?://[^\s\)\]\|<>\"'，。；：、！？（）【】《》「」『』]+")
 _EVIDENCE_HEADS = ("## 关联", "## 相关来源", "## 防裸报清单", "## 来源")
 
 
@@ -662,18 +663,21 @@ def tool_evidence(ref, max_items=40) -> str:
 
     sections = []
     for h in _EVIDENCE_HEADS:
-        for i, ln in enumerate(lines, start=1):
-            if ln.strip() == h:
-                j = i
-                chunk = []
-                while j < len(lines) and not (
-                        lines[j].startswith("## ") and j + 1 > i):
-                    if lines[j].strip():
-                        chunk.append({"line": j + 1, "text": lines[j][:300]})
-                    j += 1
-                sections.append({"heading": h, "line": i,
-                                 "items": chunk[:max_items]})
-                break
+        # Prefix match: "## 关联" also catches variant headings actually used
+        # in this wiki ("## 关联概念", "## 关联实体", "## 关联来源"), and
+        # "## 来源" catches "## 来源文章" / "## 来源与口径". Each matched
+        # heading becomes its own section; a following "## " line ends it.
+        for i, ln in enumerate(lines):
+            if not ln.strip().startswith(h):
+                continue
+            j = i + 1
+            chunk = []
+            while j < len(lines) and not lines[j].startswith("## "):
+                if lines[j].strip():
+                    chunk.append({"line": j + 1, "text": lines[j][:300]})
+                j += 1
+            sections.append({"heading": ln.strip(), "line": i + 1,
+                             "items": chunk[:max_items]})
 
     prov = {k: pg.fm[k] for k in
             ("source_url", "source_type", "captured_at", "status")
