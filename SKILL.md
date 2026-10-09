@@ -62,6 +62,38 @@ Run health audit (Obsidian-style fallback, recommended for medium/large wikis):
 python scripts/wiki_health_v2.py --root <wiki_root> --out <wiki_root>/.understand-anything/wiki-health-v2.json
 ```
 
+`wiki_health_v2.py` is the **canonical** health semantics; `wiki_health_check.py` (v1)
+is a bare-stem variant kept only for generating a `canonical-map.csv` starter.
+Diff a change against the previous baseline before accepting it:
+```powershell
+python scripts/diff_final_vs_baseline.py   # edit line 6 to point at the new report
+```
+
+### Querying a wiki at runtime: `wiki-mcp`
+
+`scripts/mcp_server.py` is a zero-dependency stdio MCP server exposing the wiki
+as tools. Copy it to `<wiki_root>/.understand-anything/mcp_server.py` and register
+it (Minimax Code: `mcp create`). Five tools:
+
+| Tool | Purpose |
+| --- | --- |
+| `wiki_search` | scored title/body search; 6-hex id and `YYYY-MM-DD` both match file names |
+| `wiki_read` | read one page. `--lines "40-60"` for 1-based inclusive LINE ranges; `offset`/`max_chars` for char paging. `meta.cite_as` gives `ref#L40-60` |
+| `wiki_evidence` | provenance + outbound URLs + cited pages + 关联/来源/防裸报清单 sections with line numbers — answers "where did this come from" (backlinks give the inbound direction only) |
+| `wiki_pack` | assemble several pages under a token budget, priority order, with per-page `cite_as` and a `dropped` list |
+| `wiki_backlinks` | pages whose wikilinks resolve to the target |
+
+Run the suite before trusting a change (it spawns its own server, so it always
+tests current code):
+```powershell
+python scripts/test_wiki_mcp.py
+```
+
+**Line numbers index the page's markdown body** (frontmatter stripped). The wiki
+stores structured summaries rather than full source text, so a line citation
+points at the wiki page's own wording — follow `provenance.source_url` for the
+original document. See `references/INGEST-SPEC.md` §7.
+
 Auto-link a new source to existing concepts (LLM-based, requires GLM_API_KEY):
 ```powershell
 # Dry-run (prints plan, no file changes)

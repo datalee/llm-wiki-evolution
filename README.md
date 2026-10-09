@@ -42,10 +42,25 @@ references/
 scripts/
   ingest_url_to_wiki.js               # single entrypoint URL -> wiki page
   wiki_health_check.py                # v1 health audit + canonical CSV starter
-  wiki_health_v2.py                   # v2 health scanner (Obsidian-style resolution)
+  wiki_health_v2.py                   # v2 health scanner (CANONICAL semantics)
   auto_link_source.py                 # append "Related sources" backlinks to a source page
   make_alias_stub.py                  # generate alias stub pages (single or bulk)
+  diff_final_vs_baseline.py           # diff a health report against the previous baseline
+  mcp_server.py                       # zero-dep stdio MCP server: query the wiki as tools
+  test_wiki_mcp.py                    # MCP test suite (spawns its own server)
 ```
+
+## Querying a wiki at runtime (wiki-mcp)
+
+`scripts/mcp_server.py` exposes the wiki to an agent over MCP — five tools:
+`wiki_search`, `wiki_read` (with `--lines "40-60"` line addressing), `wiki_evidence`
+(where did this conclusion come from), `wiki_pack` (multi-page context under a
+token budget), `wiki_backlinks`. Copy it to `<wiki_root>/.understand-anything/` and
+register it as a stdio MCP server. Run `python scripts/test_wiki_mcp.py` after any
+edit — it spawns its own server process, so it always tests current code.
+
+Ingest discipline (four-piece set, MARK dedup, mandatory 口径 labels, and the
+"summary is only a projection" rule) lives in `references/INGEST-SPEC.md`.
 
 ## Quick start
 

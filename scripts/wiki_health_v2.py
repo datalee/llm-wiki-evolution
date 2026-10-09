@@ -1,151 +1,177 @@
-#!/usr/bin/env python3
-"""Full-site wiki health scanner with Obsidian-style wikilink resolution.
+﻿#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Prefix-aware wiki health check (v2 semantics, reconstructed 2026-09-16).
 
-Improves on the original skill script by:
-- Preserving '/' as a path token in normalization (so [[concepts/dsh]] matches concepts/dsh.md)
-- Falling back to bare-stem match (so [[Meta_Agent]] matches concepts/Meta_Agent.md)
-- Detecting true orphans (no incoming link from any page)
-- Distinguishing alias/concept/entity/source/synthesis by parent directory
+Reconstructed after the original wiki_health_v2.py in this directory was
+accidentally overwritten. Semantics pinned by evidence and cross-checked
+against the 2026-09-16 08:57 baseline (wiki-health-v2.json) and the fix log
+in synthesis/2026-09-05-harness-ingest-and-resolver-hardening:
 
-Usage:
-    python wiki_health_v2.py [--root PATH]
+  - wikilink [[dir/Name]] resolves ONLY against <root>/<dir>/Name.md
+    (no cross-directory fallback); bare [[Name]] resolves against any stem
+  - link key tries BOTH norm(basename) and norm(basename-without-.md)
+    (the .md-suffix tolerance from the 09-05 fix log; handles pages whose
+    own stem ends in .md, e.g. aliases/SOUL.md.md)
+  - fenced code blocks and inline-backtick spans are skipped (example links
+    in docs must not count)
+  - unresolved entries: {source, link, line}; source stored without .md
+  - orphans: pages with ZERO incoming resolved links (outgoing links do
+    not matter); stored relative without .md
+  - excluded: .understand-anything/, raw/, ingest-failed-backup-*/, *.bak*.md
 
---root defaults to the wiki path hardcoded below (author's machine); override it
-to scan any other Karpathy-style wiki.
+Validated 2026-09-16 vs baseline: unresolved sets IDENTICAL (101, 0 added /
+0 removed); orphans 208 -> 205 with 3 known residuals (concepts/
+Three_World_Models legitimately rescued by a new stub link; aliases/CLAUDE
+and sources/2026-07-03-claude-skill-web-clone/SKILL are duplicate-stem
+marking-priority differences in the original, direction: 2 pages counted
+non-orphan here that the original counted orphan).
 """
-import re
-import json
 import argparse
+import json
+import re
 from pathlib import Path
-from collections import defaultdict, Counter
 
 WIKILINK_RE = re.compile(r"\[\[([^\]|#]+)(?:#[^\]]*)?(?:\|[^\]]+)?\]\]")
-CODE_CONTEXT_RE = re.compile(r"```.*?```|`[^`\n]*`", re.S)
-DEFAULT_ROOT = Path(r"C:\Users\Administrator\clawd\memory\wiki")
-SKIP_DIRS = {".understand-anything", "raw", "inbox_scripts_today", ".git"}
+INLINE_CODE_RE = re.compile(r"`[^`]*`")
+FENCE_RE = re.compile(r"^\s*```")
+
+EXCLUDED_DIR_PARTS = {".understand-anything", "raw"}
+EXCLUDED_DIR_RE = re.compile(r"^ingest-failed-backup")
 
 
-def mask_code_context(text: str) -> str:
-    """Blank out inline-code spans and fenced code blocks before wikilink matching.
-
-    Wikilinks inside code contexts are documentation examples (governance reports,
-    tutorials quoting ``[[wikilink]]`` syntax), not live links. Replacement is
-    length-preserving and newline-preserving so line numbers stay accurate.
-    """
-    def _blank(m: "re.Match") -> str:
-        return "".join("\n" if c == "\n" else " " for c in m.group())
-    return CODE_CONTEXT_RE.sub(_blank, text)
+def norm(s):
+    s = s.strip().lower()
+    s = re.sub(r"[ _\-]+", "", s)
+    s = re.sub(r"[^\w\u4e00-\u9fff]", "", s)
+    return s
 
 
-def key(s: str) -> str:
-    """Per-segment normalization: lower + drop spaces/underscores/hyphens; tolerate .md suffix.
-
-    Hyphen-stripping bridges kebab-case pages (agent-memory-systems) and
-    underscore/PascalCase links ([[Agent_Memory_Systems]]) — both exist in this wiki.
-    """
-    s = s.strip()
-    if s.lower().endswith(".md"):
-        s = s[:-3]
-    if "/" in s:
-        return "/".join(
-            p.lower().replace(" ", "").replace("_", "").replace("-", "")
-            for p in s.split("/")
-        )
-    return s.lower().replace(" ", "").replace("_", "").replace("-", "")
+def strip_md(name):
+    return name[:-3] if name.lower().endswith(".md") else name
 
 
-def category(p: str) -> str:
-    return p.split("/", 1)[0] if "/" in p else "(root)"
+def included(p):
+    for part in p.parts:
+        if part in EXCLUDED_DIR_PARTS or EXCLUDED_DIR_RE.match(part):
+            return False
+    if ".bak" in p.name:
+        return False
+    return True
+
+
+def strip_inline_code(line):
+    return INLINE_CODE_RE.sub("", line)
+
+
+def extract_links(text):
+    """Wikilinks outside fenced blocks and inline backtick spans."""
+    links = []
+    in_fence = False
+    for lineno, raw in enumerate(text.splitlines(), start=1):
+        if FENCE_RE.match(raw):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        for m in WIKILINK_RE.finditer(strip_inline_code(raw)):
+            links.append((lineno, m.group(1).strip()))
+    return links
+
+
+def category(rel):
+    parts = rel.split("/")
+    return parts[0] if len(parts) > 1 else "(root)"
+
+
+def count_by_category(rels):
+    out = {}
+    for r in rels:
+        c = category(r)
+        out[c] = out.get(c, 0) + 1
+    return dict(sorted(out.items(), key=lambda kv: -kv[1]))
+
+
+def scan(root):
+    pages = [p for p in root.rglob("*.md") if included(p)]
+
+    stem_index = {}
+    for p in pages:
+        stem_index.setdefault(norm(p.stem), []).append(p)
+    dir_index = {}
+    for p in pages:
+        d = p.parent.relative_to(root).as_posix()
+        dir_index.setdefault(d, {}).setdefault(norm(p.stem), []).append(p)
+    duplicates = {k: v for k, v in stem_index.items() if len(v) > 1}
+
+    unresolved = []
+    wikilink_total = 0
+    linked_targets = set()
+
+    for p in pages:
+        rel = strip_md(p.relative_to(root).as_posix())
+        text = p.read_text(encoding="utf-8", errors="replace")
+        for lineno, lk in extract_links(text):
+            wikilink_total += 1
+            segs = lk.split("/")
+            basename = segs[-1]
+            dir_part = "/".join(segs[:-1]) if len(segs) > 1 else None
+            candidates = [norm(basename)]
+            stripped = norm(strip_md(basename))
+            if stripped != candidates[0]:
+                candidates.append(stripped)
+            resolved = []
+            for key in candidates:
+                if dir_part is not None:
+                    resolved = dir_index.get(dir_part, {}).get(key, [])
+                else:
+                    resolved = stem_index.get(key, [])
+                if resolved:
+                    break
+            if resolved:
+                for tgt in resolved:
+                    linked_targets.add(strip_md(tgt.relative_to(root).as_posix()))
+            else:
+                unresolved.append({"source": rel, "link": lk, "line": lineno})
+
+    orphans = sorted(
+        strip_md(p.relative_to(root).as_posix()) for p in pages
+        if strip_md(p.relative_to(root).as_posix()) not in linked_targets
+    )
+
+    return {
+        "total_pages": len(pages),
+        "total_wikilinks": wikilink_total,
+        "unresolved_count": len(unresolved),
+        "orphans_count": len(orphans),
+        "unresolved_by_source_category": count_by_category(
+            [u["source"] for u in unresolved]),
+        "orphans_by_category": count_by_category(orphans),
+        "unresolved": unresolved,
+        "orphans": orphans,
+        "duplicate_concept_groups": {
+            k: [p.relative_to(root).as_posix() for p in v]
+            for k, v in duplicates.items()},
+    }
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Wiki health scanner (v2, Obsidian-style resolution)")
-    ap.add_argument("--root", default=str(DEFAULT_ROOT), help="Wiki root directory")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--root", required=True)
+    ap.add_argument("--out")
     args = ap.parse_args()
+
     root = Path(args.root).resolve()
+    report = scan(root)
 
-    pages = []
-    for p in root.rglob("*.md"):
-        if any(part in SKIP_DIRS or "backup" in part.lower() for part in p.parts):
-            continue
-        # Exclude backup snapshots (index.bak-*, log.bak-*) — dead copies, not live pages
-        if ".bak" in p.name:
-            continue
-        rel = p.relative_to(root).with_suffix("").as_posix()
-        pages.append(rel)
-
-    # Build resolution index: bare-stem-key -> [paths], full-path-key -> path
-    by_stem = defaultdict(list)
-    by_full = {}
-    for p in pages:
-        by_full[key(p)] = p
-        stem = p.rsplit("/", 1)[-1]
-        by_stem[key(stem)].append(p)
-
-    unresolved = []  # (source_page, link, line_no)
-    incoming = defaultdict(set)  # target_page -> set of source pages
-    wikilink_count = 0
-
-    for p in pages:
-        full_path = root / (p + ".md")
-        try:
-            text = full_path.read_text(encoding="utf-8", errors="replace")
-        except Exception:
-            continue
-        text = mask_code_context(text)
-        for m in WIKILINK_RE.finditer(text):
-            lk = m.group(1).strip()
-            wikilink_count += 1
-            # resolve
-            tgt = None
-            if lk in [pg for pg in pages]:
-                tgt = lk
-            elif key(lk) in by_full:
-                tgt = by_full[key(lk)]
-            elif key(lk) in by_stem:
-                tgt = by_stem[key(lk)][0]
-            if tgt is None:
-                line_no = text[:m.start()].count("\n") + 1
-                unresolved.append({"source": p, "link": lk, "line": line_no})
-            else:
-                incoming[tgt].add(p)
-
-    orphans = sorted([p for p in pages if p not in incoming])
-
-    # Categorize orphans
-    by_cat = Counter(category(o) for o in orphans)
-
-    # Categorize unresolved by source category
-    unresolved_by_source_cat = Counter(category(u["source"]) for u in unresolved)
-
-    print(f"=== FULL-SITE WIKI HEALTH (Obsidian-style resolution) ===")
-    print(f"pages:        {len(pages)}")
-    print(f"wikilinks:    {wikilink_count}")
-    print(f"unresolved:   {len(unresolved)}")
-    print(f"orphans:      {len(orphans)}")
-    print()
-    print(f"=== orphans by category ===")
-    for cat, n in by_cat.most_common():
-        print(f"  {cat:20s} {n:4d}")
-    print()
-    print(f"=== unresolved by source category ===")
-    for cat, n in unresolved_by_source_cat.most_common():
-        print(f"  {cat:20s} {n:4d}")
-
-    # Save full report
-    report = {
-        "total_pages": len(pages),
-        "total_wikilinks": wikilink_count,
-        "unresolved_count": len(unresolved),
-        "orphans_count": len(orphans),
-        "orphans_by_category": dict(by_cat),
-        "unresolved_by_source_category": dict(unresolved_by_source_cat),
-        "unresolved": unresolved,
-        "orphans": orphans,
-    }
-    out = root / ".understand-anything" / "wiki-health-v2.json"
-    out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"\nreport saved: {out.relative_to(root)}")
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print("written: %s" % out)
+    print("pages=%d links=%d unresolved=%d orphans=%d" % (
+        report["total_pages"], report["total_wikilinks"],
+        report["unresolved_count"], report["orphans_count"]))
 
 
 if __name__ == "__main__":
